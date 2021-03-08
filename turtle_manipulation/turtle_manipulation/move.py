@@ -11,8 +11,9 @@ from rcl_interfaces.msg import ParameterType
 # ROS2 imports:
 from geometry_msgs.msg import Twist
 
-# Program imports:
-from turtle_manipulation import GetSpeed
+# Project imports:
+from turtle_manipulation.GetSpeed import GetSpeed
+from turtle_manipulation.Screen import Screen
 
 
 class Move(Node):
@@ -33,14 +34,15 @@ class Move(Node):
             ('left', 'l')
         ])
         self.intialise_params()
-        self.get_speed = GetSpeed.GetSpeed(self.params)
+        self.get_speed = GetSpeed()
+        self.screen = Screen(self.params)
 
     def publish(self):
-        break_loop = self.get_speed.filter_and_set_keys(self.params)
+        break_loop = self.get_speed.filter_and_set_keys(self.params, self.screen.get_screen())
         # Prints current speed on screen
-        self.get_speed.print_speed(self.get_speed.getSpeed())
+        self.screen.print_speed(self.get_speed.get_speed())
         # Publisches the speed
-        self.publisher_.publish(self.get_speed.getSpeed())
+        self.publisher_.publish(self.get_speed.get_speed())
         return break_loop
 
     """
@@ -56,7 +58,7 @@ class Move(Node):
         break_loop = False
         while break_loop is False:
             break_loop = self.publish()
-        self.get_speed.end()
+        self.screen.end()
 
 
 def main(args=None):
