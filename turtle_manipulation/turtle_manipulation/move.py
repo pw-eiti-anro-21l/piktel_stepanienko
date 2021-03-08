@@ -37,17 +37,19 @@ class Move(Node):
         self.get_speed = GetSpeed()
         self.screen = Screen(self.params)
 
-    def publish(self):
+    def update_screen(self):
         break_loop = self.get_speed.filter_and_set_keys(self.params, self.screen.get_screen())
         # Prints current speed on screen
         self.screen.print_speed(self.get_speed.get_speed())
+        return break_loop
+
+    def publish(self):
+        break_loop = self.update_screen()
         # Publisches the speed
         self.publisher_.publish(self.get_speed.get_speed())
         return break_loop
 
-    """
-        Overrides the base parameter values.
-    """
+    # Overrides the base parameter values.
     def intialise_params(self):
         self.params['up'] = self.get_parameter('up')._value
         self.params['down'] = self.get_parameter('down')._value
