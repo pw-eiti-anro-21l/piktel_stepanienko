@@ -38,7 +38,7 @@ class Move(Node):
         self.screen = Screen(self.params)
 
     def update_screen(self):
-        break_loop = self.get_speed.filter_and_set_keys(self.params, self.screen.get_screen())
+        break_loop = self.get_speed.filter_keys_and_set_speed(self.params, self.screen.get_screen())
         # Prints current speed on screen
         self.screen.print_speed(self.get_speed.get_speed())
         return break_loop

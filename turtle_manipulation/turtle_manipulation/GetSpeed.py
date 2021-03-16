@@ -18,7 +18,7 @@ class GetSpeed:
         self.constants = Constants()
 
     # Runs the main loop in which keypresses are detected.
-    def filter_and_set_keys(self, params, screen):
+    def filter_keys_and_set_speed(self, params, screen):
         self.reset_speed()
         loop = True
         break_loop = False
