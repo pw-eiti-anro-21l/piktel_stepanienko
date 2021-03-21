@@ -17,26 +17,22 @@ class GetSpeed:
         self.speed = Twist()
         self.constants = Constants()
 
-    # Runs the main loop in which keypresses are detected.
+    # Keypress detection and logic that sets speed
     def filter_keys_and_set_speed(self, params, screen):
         self.reset_speed()
-        loop = True
         break_loop = False
-        while loop:
-            loop = False
-            key = screen.getch()
-            if key == ord(params['up']):
-                self.speed.linear.x = self.constants.L_SCALE * 1.0
-            elif key == ord(params['down']):
-                self.speed.linear.x = self.constants.L_SCALE * -1.0
-            elif key == ord(params['left']):
-                self.speed.angular.z = self.constants.A_SCALE * 1.0
-            elif key == ord(params['right']):
-                self.speed.angular.z = self.constants.A_SCALE * -1.0
-            elif key == ord('q'):
-                break_loop = True
-            else:
-                loop = True
+
+        key = screen.getch()
+        if key == ord(params['up']):
+            self.speed.linear.x = self.constants.L_SCALE * 1.0
+        elif key == ord(params['down']):
+            self.speed.linear.x = self.constants.L_SCALE * -1.0
+        elif key == ord(params['left']):
+            self.speed.angular.z = self.constants.A_SCALE * 1.0
+        elif key == ord(params['right']):
+            self.speed.angular.z = self.constants.A_SCALE * -1.0
+        elif key == ord('q'):
+            break_loop = True
 
         return break_loop
 

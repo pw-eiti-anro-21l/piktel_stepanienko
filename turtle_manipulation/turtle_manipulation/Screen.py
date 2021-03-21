@@ -9,14 +9,25 @@ class Screen:
 
     def __init__(self, params):
         self.screen = curses.initscr()
+        self.malformed_params = False
         self.setup(params)
 
     def setup(self, params):
         curses.cbreak()
         curses.noecho()
         self.screen.keypad(1)
-        self.print_setup(params)
+        if self.check_params(params) is False:
+            self.print_setup(params)
         self.screen.refresh()
+
+    # Checks if any of the parameters is set to 'q',
+    # which is a reserved key
+    def check_params(self, params):
+        for param, param_value in params.items():
+            if (param_value == 'q'):
+                self.print_malformed_param_file_error()
+                self.malformed_params = True
+        return self.malformed_params
 
     def print_setup(self, params):
         self.print_usage_info()
@@ -58,6 +69,11 @@ class Screen:
     # Closes curses
     def end(self):
         curses.endwin()
+
+    def print_malformed_param_file_error(self):
+        self.screen.addstr(0, 0, "Malformed parameters file.")
+        self.screen.addstr(1, 0, "Key 'q' is reserved.")
+        self.screen.addstr(2, 0, "Program will be shut down.")
 
     # Getter
     def get_screen(self):
