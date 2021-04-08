@@ -1,1 +1,19 @@
 fixed_joints: False
+
+el1-el2:
+  a: 0.0
+  d: 0.5
+  alpha: 0.0
+  t: 0.0
+
+el2-el3:
+  a: 0.0
+  d: 0.0
+  alpha: 0.0
+  t: 0.5
+
+el3-tool:
+  a: 0.0
+  d: 0.0
+  alpha: 0.0
+  t: 0.0
