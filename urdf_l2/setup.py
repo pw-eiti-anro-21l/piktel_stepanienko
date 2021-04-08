@@ -33,7 +33,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'state_publisher = urdf_l2.robot_state_publisher:main'
+            'state_publisher = urdf_l2.state_publisher:main'
         ],
     },
 )

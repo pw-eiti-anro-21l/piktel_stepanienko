@@ -23,9 +23,21 @@ class StatePublisher(Node):
       loop_rate = self.create_rate(30)
 
       # robot state
+      joint1 = 0.2
       joint2 = 0.0
-      joint1 = 0.0
       joint3 = 0.0
+
+      joint1c = 0.02
+      joint2c = 0.02
+      joint3c = 0.02
+
+      joint1min = 0.2
+      joint2min = -1.0
+      joint3min = -1.0
+
+      joint1max = 0.8
+      joint2max = 1.0
+      joint3max = 1.0
 
       # message declarations
       odom_trans = TransformStamped()
@@ -43,9 +55,18 @@ class StatePublisher(Node):
               joint_state.name = ['el1-el2', 'el2-el3', 'el3-tool']
               joint_state.position = [joint1, joint2, joint3]
 
-              joint1 += 0.001
-              joint2 += 0.1
-              joint3 += 0.1
+              joint1 += joint1c
+              joint2 += joint2c
+              joint3 += joint3c
+
+              if joint1 >= joint1max or joint1 <= joint1min:
+                joint1c *= -1
+
+              if joint2 >= joint2max or joint2 <= joint2min:
+                joint2c *= -1
+
+              if joint3 >= joint3max or joint3 <= joint3min:
+                joint3c *= -1
               
               # send the joint state and transform
               self.joint_pub.publish(joint_state)
