@@ -1,17 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="manip">
 
-<xacro:arg name="l1" default="0.4"/>
-<xacro:arg name="r1" default="0.1"/>
+<!-- Rozmiary czlonow -->
 
-<xacro:arg name="l2" default="0.2"/>
-<xacro:arg name="r2" default="0.1"/>
+<xacro:property name="sizes" value="${load_yaml('sizes.yaml')}"/>
 
-<xacro:arg name="l3" default="0.2"/>
-<xacro:arg name="r3" default="0.1"/>
+<!-- Stawy -->
 
-<xacro:arg name="l4" default="0.15"/>
-<xacro:arg name="aa4" default="0.1"/>
+<xacro:property name="joints" value="${load_yaml('joints.yaml')}"/>
+
+<xacro:property name="j1" value="prismatic"/>
+<xacro:property name="j2" value="revolute"/>
+<xacro:property name="j3" value="revolute"/>
+
+<xacro:if value="${joints['fixed_joints']==True}">
+  <xacro:property name="j1" value="fixed"/>
+  <xacro:property name="j2" value="fixed"/>
+  <xacro:property name="j3" value="fixed"/>
+</xacro:if>
+
+<!-- Parametry DH -->
 
 <xacro:arg name="a1" default="0.5"/>
 <xacro:arg name="a2" default="0.5"/>
@@ -57,26 +65,26 @@
 
 <link name="el1">
   <visual>
-    <origin xyz="0 0 ${$(arg l1)/2}" />
+    <origin xyz="0 0 ${sizes['sizes']['l1']/2}" />
     <geometry>
-      <cylinder radius="$(arg r1)" length="$(arg l1)"/>
+      <cylinder radius="${sizes['sizes']['r1']}" length="${sizes['sizes']['l1']}"/>
     </geometry>
     <material name="white"/>
   </visual>
 
   <collision>
-    <origin xyz="0 0 ${$(arg l1)/2}" />
+    <origin xyz="0 0 ${sizes['sizes']['r1']/2}" />
     <geometry>
-      <cylinder radius="$(arg r1)" length="$(arg l1)"/>
+      <cylinder radius="${sizes['sizes']['r1']}" length="${sizes['sizes']['l1']}"/>
     </geometry>
     <contact_coefficients mu="0" kp="1000.0" kd="1.0"/>
   </collision>
 </link>
 
-<joint name="el1-el2" type="prismatic">
+<joint name="el1-el2" type="${j1}">
   <parent link="el1"/>
   <child link="el2"/>
-  <origin xyz="0 0 ${$(arg l1)+0.1}" rpy="0 0 0" />
+  <origin xyz="0 0 ${sizes['sizes']['l1']+0.1}" rpy="0 0 0" />
   <axis xyz="0 0 1" />
   <limit upper="0" lower="0.0" effort="10" velocity="10" />
 </joint>
@@ -89,9 +97,9 @@
   </inertial>
 
   <visual>
-    <origin xyz="0 0 ${$(arg l2)/2}" rpy="0 0 0" />
+    <origin xyz="0 0 ${sizes['sizes']['l2']/2}" rpy="0 0 0" />
     <geometry>
-      <cylinder radius="$(arg r2)" length="$(arg l2)"/>
+      <cylinder radius="${sizes['sizes']['r2']}" length="${sizes['sizes']['l2']}"/>
     </geometry>
     <material name="white">
       <color rgba="1 1 1 1" />
@@ -99,18 +107,18 @@
   </visual>
 
   <collision>
-    <origin xyz="0 0 ${$(arg l2)/2}" />
+    <origin xyz="0 0 ${sizes['sizes']['l2']/2}" />
     <geometry>
-      <cylinder radius="$(arg r2)" length="$(arg l2)"/>
+      <cylinder radius="${sizes['sizes']['r2']}" length="${sizes['sizes']['l2']}"/>
     </geometry>
     <contact_coefficients mu="0" kp="1000.0" kd="1.0"/>
   </collision>
 </link>
 
-<joint name="el2-el3" type="revolute">
+<joint name="el2-el3" type="${j2}">
   <parent link="el2"/>
   <child link="el3"/>
-  <origin xyz="0 0 ${$(arg l2)/2}" rpy="0 0 0" />
+  <origin xyz="0 0 ${sizes['sizes']['l2']/2}" rpy="0 0 0" />
   <axis xyz="0 0 1" />
   <limit upper="0" lower="0.0" effort="10" velocity="10" />
 </joint>
@@ -123,9 +131,9 @@
   </inertial>
 
   <visual>
-    <origin xyz="${$(arg r2)+$(arg r3)} 0 0"/>
+    <origin xyz="${sizes['sizes']['r2']+sizes['sizes']['r3']} 0 0"/>
     <geometry>
-      <cylinder radius="$(arg r3)" length="$(arg l3)"/>
+      <cylinder radius="${sizes['sizes']['r3']}" length="${sizes['sizes']['l3']}"/>
     </geometry>
     <material name="white">
       <color rgba="1 1 1 1" />
@@ -133,18 +141,18 @@
   </visual>
 
   <collision>
-    <origin xyz="${$(arg r2)+$(arg r3)} 0 0"/>
+    <origin xyz="${sizes['sizes']['r2']+sizes['sizes']['r3']} 0 0"/>
     <geometry>
-      <cylinder radius="$(arg r3)" length="$(arg l3)"/>
+      <cylinder radius="${sizes['sizes']['r3']}" length="${sizes['sizes']['l3']}"/>
     </geometry>
     <contact_coefficients mu="0" kp="1000.0" kd="1.0"/>
   </collision>
 </link>
 
-<joint name="el3-tool" type="revolute">
+<joint name="el3-tool" type="${j3}">
   <parent link="el3"/>
   <child link="tool"/>
-  <origin xyz="${2*$(arg r3)} 0 0" rpy="0 0 0" />
+  <origin xyz="${2*sizes['sizes']['r3']} 0 0" rpy="0 0 0" />
   <axis xyz="0 0 1" />
   <limit upper="0" lower="0.0" effort="10" velocity="10" />
 </joint>
@@ -157,9 +165,9 @@
   </inertial>
 
   <visual>
-    <origin xyz="${$(arg l4)/2+$(arg r3)} 0 0" />
+    <origin xyz="${sizes['sizes']['l4']/2+sizes['sizes']['r3']} 0 0" />
     <geometry>
-      <box size="$(arg l4) $(arg aa4) $(arg aa4)"/>
+      <box size="${sizes['sizes']['l4']} ${sizes['sizes']['aa4']} ${sizes['sizes']['aa4']}"/>
     </geometry>
     <material name="white">
       <color rgba="1 1 1 1" />
@@ -167,9 +175,9 @@
   </visual>
 
   <collision>
-    <origin xyz="${$(arg l4)/2+$(arg r3)} 0 0" />
+    <origin xyz="${sizes['sizes']['l4']/2+sizes['sizes']['r3']} 0 0" />
     <geometry>
-      <box size="$(arg l4) $(arg aa4) $(arg aa4)"/>
+      <box size="${sizes['sizes']['l4']} ${sizes['sizes']['aa4']} ${sizes['sizes']['aa4']}"/>
     </geometry>
     <contact_coefficients mu="0" kp="1000.0" kd="1.0"/>
   </collision>
