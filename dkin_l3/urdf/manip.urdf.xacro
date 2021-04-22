@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="manip">
+
+<!-- Rozmiary czlonow -->
+
+<xacro:property name="sizes" value="${load_yaml('sizes.yaml')}"/>
+
+<!-- Stawy -->
+
+<xacro:property name="joints" value="${load_yaml('joints.yaml')}"/>
+
+<xacro:property name="j1" value="prismatic"/>
+<xacro:property name="j2" value="revolute"/>
+<xacro:property name="j3" value="revolute"/>
+
+<xacro:if value="${joints['fixed_joints']==True}">
+  <xacro:property name="j1" value="fixed"/>
+  <xacro:property name="j2" value="fixed"/>
+  <xacro:property name="j3" value="fixed"/>
+</xacro:if>
+
+
+<link name="base">
+  <visual>
+    <origin xyz="0 0 0.1" />
+    <geometry>
+      <box size="1 1 0.2"/>
+    </geometry>
+    <material name="white">
+      <color rgba="1 1 1 1" />
+    </material>
+  </visual>
+
+  <collision>
+    <origin xyz="0 0 0.1" />
+    <geometry>
+      <box size="1 1 0.2"/>
+    </geometry>
+    <contact_coefficients mu="0" kp="1000.0" kd="1.0"/>
+  </collision>
+</link>
+
+<joint name="base-el1" type="fixed">
+  <parent link="base"/>
+  <child link="el1"/>
+  <origin xyz="${joints['el1-el2']['a']} 0 0.2" rpy="0 0 0" />
+</joint>
+
+<link name="el1">
+  <visual>
+    <origin xyz="0 0 ${sizes['el1']['l']/2}" />
+    <geometry>
+      <cylinder radius="${sizes['el1']['r']}" length="${sizes['el1']['l']}"/>
+    </geometry>
+    <material name="white"/>
+  </visual>
+
+  <collision>
+    <origin xyz="0 0 ${sizes['el1']['r']/2}" />
+    <geometry>
+      <cylinder radius="${sizes['el1']['r']}" length="${sizes['el1']['l']}"/>
+    </geometry>
+    <contact_coefficients mu="0" kp="1000.0" kd="1.0"/>
+  </collision>
+</link>
+
+<joint name="el1-el2" type="${j1}">
+  <parent link="el1"/>
+  <child link="el2"/>
+  <origin xyz="${joints['el2-el3']['a']} 0 ${sizes['el1']['l']+joints['el1-el2']['d']}"
+    rpy="${joints['el1-el2']['alpha']} 0 ${joints['el1-el2']['t']}" />
+  <axis xyz="0 0 1" />
+  <limit upper="0" lower="0.0" effort="10" velocity="10" />
+</joint>
+
+<link name="el2">
+  <inertial>
+    <mass value="1"/>
+    <inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
+    <origin/>
+  </inertial>
+
+  <visual>
+    <origin xyz="0 0 ${sizes['el2']['l']/2}" rpy="0 0 0" />
+    <geometry>
+      <cylinder radius="${sizes['el2']['r']}" length="${sizes['el2']['l']}"/>
+    </geometry>
+    <material name="white">
+      <color rgba="1 1 1 1" />
+    </material>
+  </visual>
+
+  <collision>
+    <origin xyz="0 0 ${sizes['el2']['l']/2}" />
+    <geometry>
+      <cylinder radius="${sizes['el2']['r']}" length="${sizes['el2']['l']}"/>
+    </geometry>
+    <contact_coefficients mu="0" kp="1000.0" kd="1.0"/>
+  </collision>
+</link>
+
+<joint name="el2-el3" type="${j2}">
+  <parent link="el2"/>
+  <child link="el3"/>
+  <origin xyz="0 0 ${sizes['el2']['l']/2+joints['el2-el3']['d']}"
+    rpy="${joints['el2-el3']['alpha']} 0 ${joints['el2-el3']['t']}" />
+  <axis xyz="0 0 1" />
+  <limit upper="0" lower="0.0" effort="10" velocity="10" />
+</joint>
+
+<link name="el3">
+  <inertial>
+    <mass value="1"/>
+    <inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
+    <origin/>
+  </inertial>
+
+  <visual>
+    <origin xyz="${joints['el3-tool']['a']} 0 0"/>
+    <geometry>
+      <cylinder radius="${sizes['el3']['r']}" length="${sizes['el3']['l']}"/>
+    </geometry>
+    <material name="white">
+      <color rgba="1 1 1 1" />
+    </material>
+  </visual>
+
+  <collision>
+    <origin xyz="${sizes['el2']['r']+sizes['el3']['r']} 0 0"/>
+    <geometry>
+      <cylinder radius="${sizes['el3']['r']}" length="${sizes['el3']['l']}"/>
+    </geometry>
+    <contact_coefficients mu="0" kp="1000.0" kd="1.0"/>
+  </collision>
+</link>
+
+<joint name="el3-tool" type="${j3}">
+  <parent link="el3"/>
+  <child link="tool"/>
+  <origin xyz="${joints['el3-tool']['a']} 0 0"
+    rpy="${joints['el3-tool']['alpha']} 0 ${joints['el3-tool']['t']}" />
+  <axis xyz="0 0 1" />
+  <limit upper="0" lower="0.0" effort="10" velocity="10" />
+</joint>
+
+<link name="tool">
+  <inertial>
+    <mass value="1"/>
+    <inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
+    <origin/>
+  </inertial>
+
+  <visual>
+    <origin xyz="${sizes['tool']['l']/2+sizes['el3']['r']} 0 0" />
+    <geometry>
+      <box size="${sizes['tool']['l']} ${sizes['tool']['aa']} ${sizes['tool']['aa']}"/>
+    </geometry>
+    <material name="white">
+      <color rgba="1 1 1 1" />
+    </material>
+  </visual>
+
+  <collision>
+    <origin xyz="${sizes['tool']['l']/2+sizes['el3']['r']} 0 0" />
+    <geometry>
+      <box size="${sizes['tool']['l']} ${sizes['tool']['aa']} ${sizes['tool']['aa']}"/>
+    </geometry>
+    <contact_coefficients mu="0" kp="1000.0" kd="1.0"/>
+  </collision>
+</link>
+
+</robot>
