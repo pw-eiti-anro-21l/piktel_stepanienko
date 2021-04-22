@@ -13,16 +13,17 @@ from geometry_msgs.msg import PoseStamped
 from tf2_ros import TransformBroadcaster, TransformStamped
 from rclpy.clock import ROSClock
 
+from PyKDL import *
+
 class NONKDL_DKIN(Node):
 
     def __init__(self):
-        super().__init__('NONKDL_DKIN')
+        super().__init__('KDL_DKIN')
 
         self.subscription = self.create_subscription(
             JointState,
             'joint_states',
             self.listener_callback, 10)
-        # self.subscription
 
     def listener_callback(self, msg):
 
@@ -94,7 +95,6 @@ class NONKDL_DKIN(Node):
         pose_publisher = self.create_publisher(PoseStamped, '/pose_stamped_nonkdl', qos_profile)
 
         pose = PoseStamped()
-        now = self.get_clock().now()
         pose.header.stamp = ROSClock().now().to_msg()
         pose.header.frame_id = "base"
 
