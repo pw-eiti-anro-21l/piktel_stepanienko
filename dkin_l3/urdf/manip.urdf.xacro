@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="manip">
 
-<!-- Rozmiary czlonow -->
+<!-- Parametry czlonow -->
 
-<xacro:property name="sizes" value="${load_yaml('sizes.yaml')}"/>
+<xacro:property name="links" value="${load_yaml('links.yaml')}"/>
 
 <!-- Stawy -->
 
 <xacro:property name="joints" value="${load_yaml('joints.yaml')}"/>
+
+<!-- Parametry stawow -->
+
+<xacro:property name="xyz_rpy" value="${load_yaml('xyz_rpy.yaml')}"/>
+
 
 <xacro:property name="j1" value="prismatic"/>
 <xacro:property name="j2" value="revolute"/>
@@ -24,7 +29,10 @@
   <visual>
     <origin xyz="0 0 0.1" />
     <geometry>
-      <box size="1 1 0.2"/>
+      <box size="
+        ${links['base']['l']}
+        ${links['base']['l']}
+        ${links['base']['w']}" />
     </geometry>
     <material name="white">
       <color rgba="1 1 1 1" />
@@ -34,7 +42,10 @@
   <collision>
     <origin xyz="0 0 0.1" />
     <geometry>
-      <box size="1 1 0.2"/>
+      <box size="
+        ${links['base']['l']}
+        ${links['base']['l']}
+        ${links['base']['w']}" />
     </geometry>
     <contact_coefficients mu="0" kp="1000.0" kd="1.0"/>
   </collision>
@@ -43,22 +54,29 @@
 <joint name="base-el1" type="fixed">
   <parent link="base"/>
   <child link="el1"/>
-  <origin xyz="${joints['el1-el2']['a']} 0 0.2" rpy="0 0 0" />
+  <origin xyz="
+    ${xyz_rpy['base-el1']['x']}
+    ${xyz_rpy['base-el1']['y']}
+    ${xyz_rpy['base-el1']['z']}"
+    rpy="
+    ${xyz_rpy['base-el1']['roll']}
+    ${xyz_rpy['base-el1']['pitch']}
+    ${xyz_rpy['base-el1']['yaw']}" />
 </joint>
 
 <link name="el1">
   <visual>
-    <origin xyz="0 0 ${sizes['el1']['l']/2}" />
+    <origin xyz="0 0 ${links['el1']['l']/2}" />
     <geometry>
-      <cylinder radius="${sizes['el1']['r']}" length="${sizes['el1']['l']}"/>
+      <cylinder radius="${links['el1']['r']}" length="${links['el1']['l']}"/>
     </geometry>
     <material name="white"/>
   </visual>
 
   <collision>
-    <origin xyz="0 0 ${sizes['el1']['r']/2}" />
+    <origin xyz="0 0 ${links['el1']['r']/2}" />
     <geometry>
-      <cylinder radius="${sizes['el1']['r']}" length="${sizes['el1']['l']}"/>
+      <cylinder radius="${links['el1']['r']}" length="${links['el1']['l']}"/>
     </geometry>
     <contact_coefficients mu="0" kp="1000.0" kd="1.0"/>
   </collision>
@@ -67,8 +85,14 @@
 <joint name="el1-el2" type="${j1}">
   <parent link="el1"/>
   <child link="el2"/>
-  <origin xyz="${joints['el2-el3']['a']} 0 ${sizes['el1']['l']+joints['el1-el2']['d']}"
-    rpy="${joints['el1-el2']['alpha']} 0 ${joints['el1-el2']['t']}" />
+  <origin xyz="
+    ${xyz_rpy['el1-el2']['x']}
+    ${xyz_rpy['el1-el2']['y']}
+    ${xyz_rpy['el1-el2']['z']}"
+  rpy="
+    ${xyz_rpy['el1-el2']['roll']}
+    ${xyz_rpy['el1-el2']['pitch']}
+    ${xyz_rpy['el1-el2']['yaw']}" />
   <axis xyz="0 0 1" />
   <limit upper="0" lower="0.0" effort="10" velocity="10" />
 </joint>
@@ -81,9 +105,9 @@
   </inertial>
 
   <visual>
-    <origin xyz="0 0 ${sizes['el2']['l']/2}" rpy="0 0 0" />
+    <origin xyz="0 0 ${links['el2']['l']/2}" rpy="0 0 0" />
     <geometry>
-      <cylinder radius="${sizes['el2']['r']}" length="${sizes['el2']['l']}"/>
+      <cylinder radius="${links['el2']['r']}" length="${links['el2']['l']}"/>
     </geometry>
     <material name="white">
       <color rgba="1 1 1 1" />
@@ -91,9 +115,9 @@
   </visual>
 
   <collision>
-    <origin xyz="0 0 ${sizes['el2']['l']/2}" />
+    <origin xyz="0 0 ${links['el2']['l']/2}" />
     <geometry>
-      <cylinder radius="${sizes['el2']['r']}" length="${sizes['el2']['l']}"/>
+      <cylinder radius="${links['el2']['r']}" length="${links['el2']['l']}"/>
     </geometry>
     <contact_coefficients mu="0" kp="1000.0" kd="1.0"/>
   </collision>
@@ -102,8 +126,14 @@
 <joint name="el2-el3" type="${j2}">
   <parent link="el2"/>
   <child link="el3"/>
-  <origin xyz="0 0 ${sizes['el2']['l']/2+joints['el2-el3']['d']}"
-    rpy="${joints['el2-el3']['alpha']} 0 ${joints['el2-el3']['t']}" />
+  <origin xyz="
+    ${xyz_rpy['el2-el3']['x']}
+    ${xyz_rpy['el2-el3']['y']}
+    ${xyz_rpy['el2-el3']['z']}"
+    rpy="
+    ${xyz_rpy['el2-el3']['roll']}
+    ${xyz_rpy['el2-el3']['pitch']}
+    ${xyz_rpy['el2-el3']['yaw']}" />
   <axis xyz="0 0 1" />
   <limit upper="0" lower="0.0" effort="10" velocity="10" />
 </joint>
@@ -116,9 +146,9 @@
   </inertial>
 
   <visual>
-    <origin xyz="${joints['el3-tool']['a']} 0 0"/>
+    <origin xyz="${links['el3']['a']} 0 0"/>
     <geometry>
-      <cylinder radius="${sizes['el3']['r']}" length="${sizes['el3']['l']}"/>
+      <cylinder radius="${links['el3']['r']}" length="${links['el3']['l']}"/>
     </geometry>
     <material name="white">
       <color rgba="1 1 1 1" />
@@ -126,9 +156,9 @@
   </visual>
 
   <collision>
-    <origin xyz="${sizes['el2']['r']+sizes['el3']['r']} 0 0"/>
+    <origin xyz="${links['el2']['r']+links['el3']['r']} 0 0"/>
     <geometry>
-      <cylinder radius="${sizes['el3']['r']}" length="${sizes['el3']['l']}"/>
+      <cylinder radius="${links['el3']['r']}" length="${links['el3']['l']}"/>
     </geometry>
     <contact_coefficients mu="0" kp="1000.0" kd="1.0"/>
   </collision>
@@ -137,8 +167,14 @@
 <joint name="el3-tool" type="${j3}">
   <parent link="el3"/>
   <child link="tool"/>
-  <origin xyz="${joints['el3-tool']['a']} 0 0"
-    rpy="${joints['el3-tool']['alpha']} 0 ${joints['el3-tool']['t']}" />
+  <origin xyz="
+    ${xyz_rpy['el3-tool']['x']}
+    ${xyz_rpy['el3-tool']['y']}
+    ${xyz_rpy['el3-tool']['z']}"
+  rpy="
+    ${xyz_rpy['el3-tool']['roll']}
+    ${xyz_rpy['el3-tool']['pitch']}
+    ${xyz_rpy['el3-tool']['yaw']}" />
   <axis xyz="0 0 1" />
   <limit upper="0" lower="0.0" effort="10" velocity="10" />
 </joint>
@@ -151,9 +187,9 @@
   </inertial>
 
   <visual>
-    <origin xyz="${sizes['tool']['l']/2+sizes['el3']['r']} 0 0" />
+    <origin xyz="${links['tool']['l']/2+links['el3']['r']} 0 0" />
     <geometry>
-      <box size="${sizes['tool']['l']} ${sizes['tool']['aa']} ${sizes['tool']['aa']}"/>
+      <box size="${links['tool']['l']} ${links['tool']['aa']} ${links['tool']['aa']}"/>
     </geometry>
     <material name="white">
       <color rgba="1 1 1 1" />
@@ -161,9 +197,9 @@
   </visual>
 
   <collision>
-    <origin xyz="${sizes['tool']['l']/2+sizes['el3']['r']} 0 0" />
+    <origin xyz="${links['tool']['l']/2+links['el3']['r']} 0 0" />
     <geometry>
-      <box size="${sizes['tool']['l']} ${sizes['tool']['aa']} ${sizes['tool']['aa']}"/>
+      <box size="${links['tool']['l']} ${links['tool']['aa']} ${links['tool']['aa']}"/>
     </geometry>
     <contact_coefficients mu="0" kp="1000.0" kd="1.0"/>
   </collision>

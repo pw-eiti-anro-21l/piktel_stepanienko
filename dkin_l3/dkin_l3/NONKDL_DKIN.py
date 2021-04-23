@@ -29,25 +29,32 @@ class NONKDL_DKIN(Node):
         dhv = readDH()
         dhv.pop('fixed_joints')
 
-        sizes = readSizes()
+        links = readLinks()
 
         T = np.eye(4)
         T[2][3] = 0.1
 
         for i, joint in enumerate(dhv.keys()):
 
-            a = dhv[joint]['a']
             d = dhv[joint]['d']
-            alpha = dhv[joint]['alpha']
             theta = dhv[joint]['t']
 
             if i == 0:
+                a = links['el1']['a']
+                alpha = links['el1']['alpha']
+
                 d += msg.position[i]
-                d += sizes['el1']['l']
+                d += links['el1']['l']
             if i == 1:
+                a = links['el2']['a']
+                alpha = links['el2']['alpha']
+
                 theta = msg.position[i]
-                d += sizes['el2']['l']
+                d += links['el2']['l']
             if i == 2:
+                a = links['el3']['a']
+                alpha = links['el3']['alpha']
+
                 theta = msg.position[i]
 
 
@@ -74,7 +81,7 @@ class NONKDL_DKIN(Node):
             T_curr = Rotx@Transx@Rotz@Transz
             T = T @ T_curr
 
-        T = T @ np.array([[1, 0, 0, sizes['tool']['l']+sizes['el3']['r']],
+        T = T @ np.array([[1, 0, 0, links['tool']['l']+links['el3']['r']],
                           [0, 1, 0, 0],
                           [0, 0, 1, 0],
                           [0, 0, 0, 1]])
@@ -111,12 +118,12 @@ def readDH():
 
     return dhv
 
-def readSizes():
+def readLinks():
 
-    with open(os.path.join(get_package_share_directory('dkin_l3'), 'sizes.yaml'), 'r') as file:
-        sizes = yaml.load(file, Loader=yaml.FullLoader)
+    with open(os.path.join(get_package_share_directory('dkin_l3'), 'links.yaml'), 'r') as file:
+        links = yaml.load(file, Loader=yaml.FullLoader)
 
-    return sizes
+    return links
 
 def main(args=None):
     rclpy.init(args=args)

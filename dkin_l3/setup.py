@@ -35,7 +35,8 @@ setup(
         'console_scripts': [
             'state_publisher = dkin_l3.state_publisher:main',
             'KDL_DKIN = dkin_l3.KDL_DKIN:main',
-            'NONKDL_DKIN = dkin_l3.NONKDL_DKIN:main'
+            'NONKDL_DKIN = dkin_l3.NONKDL_DKIN:main',
+            'XYZ_RPY = dkin_l3.XYZ_RPY:main'
         ],
     },
 )

@@ -28,6 +28,12 @@ def generate_launch_description():
             default_value='false',
             description='Use simulation (Gazebo) clock if true'),
         Node(
+            package='dkin_l3',
+            executable='XYZ_RPY',
+            name='XYZ_RPY',
+            output='screen',
+        ),
+        Node(
             package='robot_state_publisher',
             executable='robot_state_publisher',
             name='robot_state_publisher',
