@@ -13,7 +13,8 @@ from geometry_msgs.msg import PoseStamped
 from tf2_ros import TransformBroadcaster, TransformStamped
 from rclpy.clock import ROSClock
 
-import PyKDL
+from PyKDL import *
+# from PyKDL import Chain, Joint, Frame, Rotation, Vector, Segment, ChainFkSolverPos_recursive, JntToCart
 
 class NONKDL_DKIN(Node):
 
@@ -31,75 +32,86 @@ class NONKDL_DKIN(Node):
         dhv.pop('fixed_joints')
 
         links = readLinks()
+        xyz_rpy = readXYZ_RPY()
+        
+        # Lancuch kinematyczny
+        chain = Chain()
 
-        T = np.eye(4)
-        T[2][3] = 0.1
+        # Joint el1-el2
+        el1_el2 = Joint(Joint.TransZ)
+        frame1 = Frame(
+            Rotation.RPY(
+                xyz_rpy['el1-el2']['roll'],
+                xyz_rpy['el1-el2']['pitch'],
+                xyz_rpy['el1-el2']['yaw'],
+                ),
+            Vector(
+                xyz_rpy['el1-el2']['x'],
+                xyz_rpy['el1-el2']['y'],
+                xyz_rpy['el1-el2']['z'],
+            )
+        )
+        segment1 = Segment(el1_el2, frame1)
+        chain.addSegment(segment1)
+        
+        # Joint el2-el3
+        el2_el3 = Joint(Joint.RotZ)
+        frame2 = Frame(
+            Rotation.RPY(
+                xyz_rpy['el2-el3']['roll'],
+                xyz_rpy['el2-el3']['pitch'],
+                xyz_rpy['el2-el3']['yaw']
+                ),
+            Vector(
+                xyz_rpy['el2-el3']['x'],
+                xyz_rpy['el2-el3']['y'],
+                xyz_rpy['el2-el3']['z'],
+            )
+        )
+        segment2 = Segment(el2_el3, frame2)
+        chain.addSegment(segment2)
 
-        for i, joint in enumerate(dhv.keys()):
+        # Joint el3-tool
+        el3_tool = Joint(Joint.RotX)
+        frame3 = Frame(
+            Rotation.RPY(
+                xyz_rpy['el3-tool']['roll'],
+                xyz_rpy['el3-tool']['pitch'],
+                xyz_rpy['el3-tool']['yaw']
+                ),
+            Vector(
+                xyz_rpy['el3-tool']['x'],
+                xyz_rpy['el3-tool']['y'],
+                xyz_rpy['el3-tool']['z'],
+            )
+        )
+        segment3 = Segment(el3_tool, frame3)
+        chain.addSegment(segment3)
+        
 
-            d = dhv[joint]['d']
-            theta = dhv[joint]['t']
+            # Forward kinematics
+        joint_positions = JntArray(3)
+        joint_positions[0] = msg.position[0]
+        joint_positions[1] = -msg.position[1]
+        joint_positions[2] = -msg.position[2]
 
-            if i == 0:
-                a = links['el1']['a']
-                alpha = links['el1']['alpha']
+        # Solver
+        fk = ChainFkSolverPos_recursive(chain)
+        endFrame = Frame()
+        fk.JntToCart(joint_positions,endFrame)
 
-                d += msg.position[i]
-                d += links['el1']['l']
-            if i == 1:
-                a = links['el2']['a']
-                alpha = links['el2']['alpha']
-
-                theta = msg.position[i]
-                d += links['el2']['l']
-            if i == 2:
-                a = links['el3']['a']
-                alpha = links['el3']['alpha']
-
-                theta = msg.position[i]
-
-
-            Rotx = np.array([[1, 0, 0, 0],
-                             [0, cos(alpha), -sin(alpha), 0],
-                             [0, sin(alpha), cos(alpha), 0],
-                             [0, 0, 0, 1]])
-
-            Transx = np.array([[1, 0, 0, a],
-                               [0, 1, 0, 0],
-                               [0, 0, 1, 0],
-                               [0, 0, 0, 1]])
-
-            Rotz = np.array([[cos(theta), -sin(theta), 0, 0],
-                             [sin(theta), cos(theta), 0, 0],
-                             [0, 0, 1, 0],
-                             [0, 0, 0, 1]])
-
-            Transz = np.array([[1, 0, 0, 0],
-                               [0, 1, 0, 0],
-                               [0, 0, 1, d],
-                               [0, 0, 0, 1]])
-
-            T_curr = Rotx@Transx@Rotz@Transz
-            T = T @ T_curr
-
-        T = T @ np.array([[1, 0, 0, links['tool']['l']+links['el3']['r']],
-                          [0, 1, 0, 0],
-                          [0, 0, 1, 0],
-                          [0, 0, 0, 1]])
-
-        xyz = [T[0][3], T[1][3], T[2][3]]
+        qua = endFrame.M.GetQuaternion()
+        tool_offset = Vector(
+            links['tool']['aa'] + links['el3']['r'],
+            0,
+            0)
+        endFrame.p + tool_offset
+        xyz = endFrame.p
         print(xyz)
-
-        rpy = mathutils.Matrix([
-            [T[0][0], T[0][1], T[0][2]],
-            [T[1][0], T[1][1], T[1][2]],
-            [T[2][0], T[2][1], T[2][2]]
-        ])
-        qua = rpy.to_quaternion()
 
 
         qos_profile = QoSProfile(depth=10)
-        pose_publisher = self.create_publisher(PoseStamped, '/pose_stamped_nonkdl', qos_profile)
+        pose_publisher = self.create_publisher(PoseStamped, '/pose_stamped_kdl', qos_profile)
 
         pose = PoseStamped()
         pose.header.stamp = ROSClock().now().to_msg()
@@ -113,18 +125,23 @@ class NONKDL_DKIN(Node):
         pose_publisher.publish(pose)
 
 def readDH():
-
     with open(os.path.join(get_package_share_directory('dkin_l3'), 'joints.yaml'), 'r') as file:
         dhv = yaml.load(file, Loader=yaml.FullLoader)
 
     return dhv
 
 def readLinks():
-
     with open(os.path.join(get_package_share_directory('dkin_l3'), 'links.yaml'), 'r') as file:
         links = yaml.load(file, Loader=yaml.FullLoader)
 
     return links
+
+def readXYZ_RPY():
+    with open(os.path.join(get_package_share_directory('dkin_l3'), 'xyz_rpy.yaml'), 'r') as file:
+        xyz_rpy = yaml.load(file, Loader=yaml.FullLoader)
+
+    return xyz_rpy
+
 
 def main(args=None):
     rclpy.init(args=args)
