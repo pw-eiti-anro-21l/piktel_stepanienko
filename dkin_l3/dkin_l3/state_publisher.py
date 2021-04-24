@@ -55,9 +55,9 @@ class StatePublisher(Node):
               joint_state.name = ['el1-el2', 'el2-el3', 'el3-tool']
               joint_state.position = [joint1, joint2, joint3]
 
-              # joint1 += joint1c
-              # joint2 += joint2c
-              # joint3 += joint3c
+              joint1 += joint1c
+              joint2 += joint2c
+              joint3 += joint3c
 
               if joint1 >= joint1max or joint1 <= joint1min:
                 joint1c *= -1

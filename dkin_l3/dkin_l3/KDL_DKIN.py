@@ -16,10 +16,10 @@ from rclpy.clock import ROSClock
 from PyKDL import *
 # from PyKDL import Chain, Joint, Frame, Rotation, Vector, Segment, ChainFkSolverPos_recursive, JntToCart
 
-class NONKDL_DKIN(Node):
+class KDL_DKIN(Node):
 
     def __init__(self):
-        super().__init__('NONKDL_DKIN')
+        super().__init__('KDL_DKIN')
 
         self.subscription = self.create_subscription(
             JointState,
@@ -146,11 +146,11 @@ def readXYZ_RPY():
 def main(args=None):
     rclpy.init(args=args)
 
-    nonkdl = NONKDL_DKIN()
+    kdl = KDL_DKIN()
     try:
-        rclpy.spin(nonkdl)
+        rclpy.spin(kdl)
     except KeyboardInterrupt:
-        nonkdl.destroy_node()
+        kdl.destroy_node()
         rclpy.shutdown()
 
 

@@ -47,4 +47,9 @@ def generate_launch_description():
             output='screen',
             parameters=[{'use_sim_time': use_sim_time}],
             arguments=['-d', rviz]),
+        Node(
+            package='dkin_l3',
+            executable='state_publisher',
+            name='state_publisher',
+            output='screen'),
     ])

@@ -21,7 +21,7 @@ def generate_launch_description():
         Node(
             package='dkin_l3',
             executable='NONKDL_DKIN',
-            name='kdl_pose_stamped',
+            name='nonkdl_pose_stamped',
             parameters=[{
                 'use_sim_time': use_sim_time,
                 'yaml_file': yaml
