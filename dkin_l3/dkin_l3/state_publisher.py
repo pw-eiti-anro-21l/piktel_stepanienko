@@ -57,7 +57,7 @@ class StatePublisher(Node):
 
               joint1 += joint1c
               joint2 += joint2c
-              joint3 += joint3c
+              # joint3 += joint3c
 
               if joint1 >= joint1max or joint1 <= joint1min:
                 joint1c *= -1

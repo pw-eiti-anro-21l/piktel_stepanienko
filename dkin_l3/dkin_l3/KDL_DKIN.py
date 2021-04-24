@@ -33,9 +33,32 @@ class KDL_DKIN(Node):
 
         links = readLinks()
         xyz_rpy = readXYZ_RPY()
+
+        tool_offset = Vector(
+        links['tool']['l'] + links['el3']['r'],
+        0,
+        0)
+
         
         # Lancuch kinematyczny
         chain = Chain()
+
+        # Joint base-el1
+        base_el1 = Joint(Joint.TransZ)
+        frame0 = Frame(
+            Rotation.RPY(
+                xyz_rpy['base-el1']['roll'],
+                xyz_rpy['base-el1']['pitch'],
+                xyz_rpy['base-el1']['yaw'],
+                ),
+            Vector(
+                xyz_rpy['base-el1']['x'],
+                xyz_rpy['base-el1']['y'],
+                xyz_rpy['base-el1']['z'],
+            )
+        )
+        segment0 = Segment(base_el1, frame0)
+        chain.addSegment(segment0)
 
         # Joint el1-el2
         el1_el2 = Joint(Joint.TransZ)
@@ -66,13 +89,13 @@ class KDL_DKIN(Node):
                 xyz_rpy['el2-el3']['x'],
                 xyz_rpy['el2-el3']['y'],
                 xyz_rpy['el2-el3']['z'],
-            )
+            ) + tool_offset
         )
         segment2 = Segment(el2_el3, frame2)
         chain.addSegment(segment2)
 
         # Joint el3-tool
-        el3_tool = Joint(Joint.RotX)
+        el3_tool = Joint(Joint.RotZ)
         frame3 = Frame(
             Rotation.RPY(
                 xyz_rpy['el3-tool']['roll'],
@@ -90,10 +113,11 @@ class KDL_DKIN(Node):
         
 
             # Forward kinematics
-        joint_positions = JntArray(3)
-        joint_positions[0] = msg.position[0]
-        joint_positions[1] = -msg.position[1]
-        joint_positions[2] = -msg.position[2]
+        joint_positions = JntArray(4)
+        joint_positions[0] = 0
+        joint_positions[1] = msg.position[0]
+        joint_positions[2] = msg.position[1]
+        joint_positions[3] = msg.position[2]
 
         # Solver
         fk = ChainFkSolverPos_recursive(chain)
@@ -101,11 +125,10 @@ class KDL_DKIN(Node):
         fk.JntToCart(joint_positions,endFrame)
 
         qua = endFrame.M.GetQuaternion()
-        tool_offset = Vector(
-            links['tool']['aa'] + links['el3']['r'],
-            0,
-            0)
-        endFrame.p + tool_offset
+
+
+
+        # xyz = endFrame.p + tool_offset
         xyz = endFrame.p
         print(xyz)
 
@@ -120,7 +143,7 @@ class KDL_DKIN(Node):
         pose.pose.position.x = xyz[0]
         pose.pose.position.y = xyz[1]
         pose.pose.position.z = xyz[2]
-        pose.pose.orientation = Quaternion(w=qua[0], x=qua[1], y=qua[2], z=qua[3])
+        pose.pose.orientation = Quaternion(w=qua[3], x=qua[0], y=qua[1], z=qua[2])
 
         pose_publisher.publish(pose)
 
