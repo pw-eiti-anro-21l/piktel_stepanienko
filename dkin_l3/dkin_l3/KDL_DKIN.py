@@ -28,23 +28,20 @@ class KDL_DKIN(Node):
 
     def listener_callback(self, msg):
 
+        # Data load
         dhv = readDH()
         dhv.pop('fixed_joints')
-
         links = readLinks()
         xyz_rpy = readXYZ_RPY()
 
         tool_offset = Vector(
-        links['tool']['l'] + links['el3']['r'],
-        0,
-        0)
+        links['tool']['l'] + links['el3']['r'], 0, 0)
 
-        
         # Lancuch kinematyczny
         chain = Chain()
 
         # Joint base-el1
-        base_el1 = Joint(Joint.TransZ)
+        base_el1 = Joint(Joint.Fixed)
         frame0 = Frame(
             Rotation.RPY(
                 xyz_rpy['base-el1']['roll'],
@@ -89,13 +86,14 @@ class KDL_DKIN(Node):
                 xyz_rpy['el2-el3']['x'],
                 xyz_rpy['el2-el3']['y'],
                 xyz_rpy['el2-el3']['z'],
-            ) + tool_offset
+            )
         )
         segment2 = Segment(el2_el3, frame2)
         chain.addSegment(segment2)
 
-        # Joint el3-tool
-        el3_tool = Joint(Joint.RotZ)
+        # Joint el3_z_axis
+        # Sets the rotation axis
+        el3_z_axis = Joint(Joint.Fixed)
         frame3 = Frame(
             Rotation.RPY(
                 xyz_rpy['el3-tool']['roll'],
@@ -108,30 +106,31 @@ class KDL_DKIN(Node):
                 xyz_rpy['el3-tool']['z'],
             )
         )
-        segment3 = Segment(el3_tool, frame3)
+        segment3 = Segment(el3_z_axis, frame3)
         chain.addSegment(segment3)
         
+        # Joint el3-tool
+        el3_tool = Joint(Joint.RotZ)
+        frame4 = Frame(
+            Rotation.RPY(0,0,0),
+            tool_offset
+        )
+        segment4 = Segment(el3_tool, frame4)
+        chain.addSegment(segment4)
 
-            # Forward kinematics
-        joint_positions = JntArray(4)
-        joint_positions[0] = 0
-        joint_positions[1] = msg.position[0]
-        joint_positions[2] = msg.position[1]
-        joint_positions[3] = msg.position[2]
+        joint_positions = JntArray(3)
+        joint_positions[0] = msg.position[0]
+        joint_positions[1] = msg.position[1]
+        joint_positions[2] = msg.position[2]
 
         # Solver
         fk = ChainFkSolverPos_recursive(chain)
         endFrame = Frame()
         fk.JntToCart(joint_positions,endFrame)
-
         qua = endFrame.M.GetQuaternion()
 
-
-
-        # xyz = endFrame.p + tool_offset
         xyz = endFrame.p
         print(xyz)
-
 
         qos_profile = QoSProfile(depth=10)
         pose_publisher = self.create_publisher(PoseStamped, '/pose_stamped_kdl', qos_profile)
