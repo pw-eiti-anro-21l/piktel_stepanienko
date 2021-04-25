@@ -130,7 +130,7 @@ class KDL_DKIN(Node):
         qua = endFrame.M.GetQuaternion()
 
         xyz = endFrame.p
-        print(xyz)
+        # print(xyz)
 
         qos_profile = QoSProfile(depth=10)
         pose_publisher = self.create_publisher(PoseStamped, '/pose_stamped_kdl', qos_profile)

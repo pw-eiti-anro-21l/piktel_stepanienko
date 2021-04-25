@@ -87,7 +87,7 @@ class NONKDL_DKIN(Node):
                           [0, 0, 0, 1]])
 
         xyz = [T[0][3], T[1][3], T[2][3]]
-        print(xyz)
+        # print(xyz)
 
         rpy = mathutils.Matrix([
             [T[0][0], T[0][1], T[0][2]],
