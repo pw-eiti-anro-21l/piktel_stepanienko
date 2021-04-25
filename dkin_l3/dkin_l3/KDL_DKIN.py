@@ -119,9 +119,13 @@ class KDL_DKIN(Node):
         chain.addSegment(segment4)
 
         joint_positions = JntArray(3)
-        joint_positions[0] = msg.position[0]
-        joint_positions[1] = msg.position[1]
-        joint_positions[2] = msg.position[2]
+
+        [joint_positions[0],
+        joint_positions[1],
+        joint_positions[2]] = self.check_joint_limits(
+            msg.position[0],
+            msg.position[1],
+            msg.position[2])
 
         # Solver
         fk = ChainFkSolverPos_recursive(chain)
@@ -130,7 +134,12 @@ class KDL_DKIN(Node):
         qua = endFrame.M.GetQuaternion()
 
         xyz = endFrame.p
-        # print(xyz)
+
+        # Log current position with 3 decimal numbers
+        self.get_logger().info("Current xyz position: [" +
+        "{:.3f}".format(xyz.x()) + ", " +
+        "{:.3f}".format(xyz.y()) + ", " +
+        "{:.3f}".format(xyz.z()) + "]")
 
         qos_profile = QoSProfile(depth=10)
         pose_publisher = self.create_publisher(PoseStamped, '/pose_stamped_kdl', qos_profile)
@@ -145,6 +154,44 @@ class KDL_DKIN(Node):
         pose.pose.orientation = Quaternion(w=qua[3], x=qua[0], y=qua[1], z=qua[2])
 
         pose_publisher.publish(pose)
+
+    def check_joint_limits(self, joint1, joint2, joint3):
+        joint1min = 0.2
+        joint2min = -1.0
+        joint3min = -1.0
+
+        joint1max = 0.8
+        joint2max = 1.0
+        joint3max = 1.0
+
+        if joint1 >= joint1max or joint1 <= joint1min:
+            self.get_logger().info("ERROR: Joint el1-el2 is overstepping!")
+            if joint1 >= joint1max:
+                joint1_out = joint1max
+            elif joint1 <= joint1min:
+                joint1_out = joint1min
+        else:
+            joint1_out = joint1
+
+        if joint2 >= joint2max or joint2 <= joint2min:
+            self.get_logger().info("ERROR: Joint el2-el3 is overstepping!")
+            if joint2 >= joint2max:
+                joint2_out = joint2max
+            elif joint2 <= joint2min:
+                joint2_out = joint2min
+        else:
+            joint2_out = joint2
+
+        if joint3 >= joint3max or joint3 <= joint3min:
+            self.get_logger().info("ERROR: Joint el3-tool is overstepping!")
+            if joint3 >= joint3max:
+                joint3_out = joint3max
+            elif joint3 <= joint3min:
+                joint3_out = joint3min
+        else:
+            joint3_out = joint3
+        
+        return joint1_out, joint2_out, joint3_out
 
 def readDH():
     with open(os.path.join(get_package_share_directory('dkin_l3'), 'joints.yaml'), 'r') as file:

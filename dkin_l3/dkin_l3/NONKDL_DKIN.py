@@ -43,19 +43,19 @@ class NONKDL_DKIN(Node):
                 a = links['el1']['a']
                 alpha = links['el1']['alpha']
 
-                d += msg.position[i]
+                d += self.check_joint_limits(msg.position[i], i)
                 d += links['el1']['l']
             if i == 1:
                 a = links['el2']['a']
                 alpha = links['el2']['alpha']
 
-                theta = msg.position[i]
+                theta = self.check_joint_limits(msg.position[i], i)
                 d += links['el2']['l']
             if i == 2:
                 a = links['el3']['a']
                 alpha = links['el3']['alpha']
 
-                theta = msg.position[i]
+                theta = self.check_joint_limits(msg.position[i], i)
 
 
             Rotx = np.array([[1, 0, 0, 0],
@@ -87,7 +87,12 @@ class NONKDL_DKIN(Node):
                           [0, 0, 0, 1]])
 
         xyz = [T[0][3], T[1][3], T[2][3]]
-        # print(xyz)
+
+        # Log current position with 3 decimal numbers
+        self.get_logger().info("Current xyz position: [" +
+        "{:.3f}".format(xyz[0]) + ", " +
+        "{:.3f}".format(xyz[1]) + ", " +
+        "{:.3f}".format(xyz[2]) + "]")
 
         rpy = mathutils.Matrix([
             [T[0][0], T[0][1], T[0][2]],
@@ -95,7 +100,6 @@ class NONKDL_DKIN(Node):
             [T[2][0], T[2][1], T[2][2]]
         ])
         qua = rpy.to_quaternion()
-
 
         qos_profile = QoSProfile(depth=10)
         pose_publisher = self.create_publisher(PoseStamped, '/pose_stamped_nonkdl', qos_profile)
@@ -110,6 +114,24 @@ class NONKDL_DKIN(Node):
         pose.pose.orientation = Quaternion(w=qua[0], x=qua[1], y=qua[2], z=qua[3])
 
         pose_publisher.publish(pose)
+
+    # Params: Joint value, joint number
+    def check_joint_limits(self, joint, i):
+        joint_min = [0.2, -1.0, -1,0]
+        joint_max = [0.8, 1.0, 1.0]
+        joint_str = ["el1-el1", "el2-el3", "el3-tool"]
+
+        if joint >= joint_max[i] or joint <= joint_min[i]:
+            self.get_logger().info("ERROR: Joint " + joint_str[i] + " is overstepping!")
+            if joint >= joint_max[i]:
+                joint_out = joint_max[i]
+            elif joint <= joint_min[i]:
+                joint_out = joint_min[i]
+        else:
+            joint_out = joint
+        
+        return joint_out
+
 
 def readDH():
 
