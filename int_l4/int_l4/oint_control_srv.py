@@ -102,7 +102,9 @@ class Oint_srv(Node):
 
 
     def interpolation_spline(self, request):
-        pass
+        step_time = 0.1
+        total_time = request.time
+        steps = math.floor(total_time/step_time)
 
     def from_euler_to_qua(self, rpos1, rpos2, rpos3):
         qua = euler2quat(rpos1, rpos2, rpos3, axes='sxyz')
