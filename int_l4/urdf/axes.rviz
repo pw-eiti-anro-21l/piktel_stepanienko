@@ -6,9 +6,6 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
-        - /TF1
-        - /RobotModel1
-        - /RobotModel1/Description Topic1
       Splitter Ratio: 0.5
     Tree Height: 617
   - Class: rviz_common/Selection
@@ -45,86 +42,6 @@ Visualization Manager:
       Plane Cell Count: 10
       Reference Frame: <Fixed Frame>
       Value: true
-    - Class: rviz_default_plugins/TF
-      Enabled: true
-      Frame Timeout: 15
-      Frames:
-        All Enabled: true
-        base:
-          Value: true
-        el1:
-          Value: true
-        el2:
-          Value: true
-        el3:
-          Value: true
-        odom:
-          Value: true
-        tool:
-          Value: true
-      Marker Scale: 1
-      Name: TF
-      Show Arrows: true
-      Show Axes: true
-      Show Names: false
-      Tree:
-        odom:
-          base:
-            el1:
-              el2:
-                el3:
-                  tool:
-                    {}
-      Update Interval: 0
-      Value: true
-    - Alpha: 1
-      Class: rviz_default_plugins/RobotModel
-      Collision Enabled: false
-      Description File: ""
-      Description Source: Topic
-      Description Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /robot_description
-      Enabled: true
-      Links:
-        All Links Enabled: true
-        Expand Joint Details: false
-        Expand Link Details: false
-        Expand Tree: false
-        Link Tree Style: Links in Alphabetic Order
-        base:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        el1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        el2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        el3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tool:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-      Name: RobotModel
-      TF Prefix: ""
-      Update Interval: 0
-      Value: true
-      Visual Enabled: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -202,5 +119,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1340
-  X: 511
-  Y: 63
+  X: 597
+  Y: 66

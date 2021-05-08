@@ -37,6 +37,8 @@ setup(
             'XYZ_RPY = int_l4.XYZ_RPY:main',
             'jint = int_l4.jint_control_srv:main',
             'jint_req = int_l4.jint_client:main',
+            'oint = int_l4.oint_control_srv:main',
+            'oint_req = int_l4.oint_client:main',
         ],
     },
 )

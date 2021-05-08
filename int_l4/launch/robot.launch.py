@@ -21,7 +21,7 @@ def generate_launch_description():
         urdf_file_name)
 
     yaml_file_name = 'joints.yaml'
-    yaml = os.path.join(get_package_share_directory('dkin_l3'), yaml_file_name)
+    yaml = os.path.join(get_package_share_directory('int_l4'), yaml_file_name)
 
     os.system('xacro '+urdf+'xacro > '+urdf+'xml')
 
