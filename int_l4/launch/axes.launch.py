@@ -19,6 +19,9 @@ def generate_launch_description():
             'use_sim_time',
             default_value='false',
             description='Use simulation (Gazebo) clock if true'),
+        Node(package = "tf2_ros", 
+            executable = "static_transform_publisher",
+            arguments = ['0', '0', '0', '0', '0', '0', '1', 'map', 'base']),
         Node(
             package='rviz2',
             executable='rviz2',

@@ -93,6 +93,10 @@ class Jint_srv(Node):
     def interpolation_spline(self, request):
         pass
 
+    def data_init(self):
+        self.links = readLinks()
+        self.xyz_rpy = readXYZ_RPY()
+
     def marker_init(self):
         self.markerArray = MarkerArray()
         qos_profile = QoSProfile(depth=10)
@@ -159,12 +163,6 @@ class Jint_srv(Node):
             self.marker.color.r = 0.0
             self.marker.color.g = 0.0
             self.marker.color.b = 1.0
-
-    def data_init(self):
-        # self.dhv = readDH()
-        # self.dhv.pop('fixed_joints')
-        self.links = readLinks()
-        self.xyz_rpy = readXYZ_RPY()
 
     def get_marker_pose(self, cpos1, cpos2, cpos3):
         tool_offset = Vector(
