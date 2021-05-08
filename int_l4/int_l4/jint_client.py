@@ -1,5 +1,5 @@
 import sys
-from interfaces.srv import Interpolation
+from interfaces.srv import Jint
 import rclpy
 from rclpy.node import Node
 
@@ -9,10 +9,10 @@ class JintClient(Node):
     def __init__(self):
         super().__init__('jint_client')
 
-        self.client = self.create_client(Interpolation, 'interpolacja')
+        self.client = self.create_client(Jint, 'jint_control_srv')
         while not self.client.wait_for_service(timeout_sec=2.0):
             self.get_logger().info('Oczekiwanie na serwis')
-        self.request = Interpolation.Request()
+        self.request = Jint.Request()
 
     def send_request(self):
         try:

@@ -11,18 +11,21 @@ from sensor_msgs.msg import JointState
 import time
 import math  
 
-from interfaces.srv import Interpolation
+from interfaces.srv import Jint
 
 
-class Jint(Node):
+class Jint_srv(Node):
 
 
     def __init__(self):
         super().__init__('jint')
-        self.srv = self.create_service(Interpolation, 'interpolacja', self.interpolation_callback)
+        self.srv = self.create_service(Jint, 'jint_control_srv', self.service_callback)
         self.start_positions = [0.2, 0, 0]
 
-    def interpolation_callback(self, request, response):
+        qos_profile = QoSProfile(depth=10)
+        self.joint_pub = self.create_publisher(JointState, '/joint_states', qos_profile)
+
+    def service_callback(self, request, response):
 
         if request.joint1_goal < 0:
             response.status = 'Nie udalo sie dokonac interpolacji, zla pozycja docelowa zlacza 1'
@@ -30,47 +33,60 @@ class Jint(Node):
         if request.time <= 0:
             response.status = 'Nie udalo sie dokonac interpolacji, zly czas interpolacji'
             return response
-        if request.type != 'linear' and request.type != 'nonlinear':
+        if request.type != 'linear' and request.type != 'spline':
             response.status = 'Nie udalo sie dokonac interpolacji, nieznany typ interpolacji'
             return response
                                                
         self.get_logger().info('Rozpoczynanie interpolacji')
 
+        if request.type == 'linear':
+            self.interpolation_linear(request)
+            
+        if request.type == 'spline':
+            self.interpolation_spline(request)
+    
+        self.get_logger().info('Koniec interpolacji')
+
+        response.status = 'Interpolacja zakonczona pomyslnie'
+        return response
+
+    def interpolation_linear(self, request):
         step_time = 0.1
         total_time = request.time
         steps = math.floor(total_time/step_time)
 
-        for i in range(1,steps+1):
+        step_move1 = (request.joint1_goal - self.start_positions[0])/steps
+        step_move2 = (request.joint2_goal - self.start_positions[1])/steps
+        step_move3 = (request.joint3_goal - self.start_positions[2])/steps
 
-            qos_profile1 = QoSProfile(depth=10)
-            self.joint_pub = self.create_publisher(JointState, '/joint_states', qos_profile1)
+        cpos1 = self.start_positions[0]
+        cpos2 = self.start_positions[1]
+        cpos3 = self.start_positions[2]
+
+        for i in range(steps):
+
             joint_state = JointState()
             now = self.get_clock().now()
             joint_state.header.stamp = now.to_msg()
             joint_state.name = ['el1-el2', 'el2-el3', 'el3-tool']
 
-            joint1_goal = request.joint1_goal
-            joint2_goal = request.joint2_goal
-            joint3_goal = request.joint3_goal
+            cpos1 += step_move1
+            cpos2 += step_move2
+            cpos3 += step_move3
 
-            # Interpolacja liniowa
-            if(request.type == 'linear'):
-                joint1_step = self.start_positions[0] + ((joint1_goal - self.start_positions[0])/total_time)*step_time*i
-                joint2_step = self.start_positions[1] + ((joint2_goal - self.start_positions[1])/total_time)*step_time*i
-                joint3_step = self.start_positions[2] + ((joint3_goal - self.start_positions[2])/total_time)*step_time*i
-
-            joint_state.position = [float(joint1_step), float(joint2_step), float(joint3_step)]
+            joint_state.position = [float(cpos1), float(cpos2), float(cpos3)]
+            self.get_logger().info(str(cpos1))
             self.joint_pub.publish(joint_state)
             time.sleep(step_time)
 
-        self.start_positions = [joint1_step, joint2_step, joint3_step]
-        self.get_logger().info('Koniec interpolacji')
-        response.status = 'Interpolacja zakonczona pomyslnie'
-        return response
+        self.start_positions = [cpos1, cpos2, cpos3]
+
+    def interpolation_spline(self, request):
+        pass
 
 def main(args=None):
     rclpy.init(args=args)
-    jint_service = Jint()
+    jint_service = Jint_srv()
     rclpy.spin(jint_service)
     rclpy.shutdown()
 

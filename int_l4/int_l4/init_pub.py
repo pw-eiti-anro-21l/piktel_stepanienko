@@ -44,7 +44,7 @@ class StatePublisher(Node):
               self.broadcaster.sendTransform(odom_trans)
 
               t+=1
-              if t > 15:
+              if t > 30:
                 self.destroy_node()
                 self.get_logger().info("finished")
 
