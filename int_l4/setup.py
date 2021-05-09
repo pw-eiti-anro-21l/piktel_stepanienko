@@ -39,6 +39,8 @@ setup(
             'jint_req = int_l4.jint_client:main',
             'oint = int_l4.oint_control_srv:main',
             'oint_req = int_l4.oint_client:main',
+            'jcmd = int_l4.jcmd:main',
+            'ocmd = int_l4.ocmd:main'
         ],
     },
 )

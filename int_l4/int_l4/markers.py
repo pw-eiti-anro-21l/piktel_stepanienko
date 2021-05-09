@@ -43,7 +43,7 @@ class Markers(Node):
         self.marker.pose.orientation.y = 1.0
         self.marker.pose.orientation.z = 1.0
 
-    def marker_set(self, cpos1, cpos2, cpos3, marker_id):
+    def marker_set_jint(self, cpos1, cpos2, cpos3, marker_id):
         xyz, orientation = self.get_marker_pose(cpos1, cpos2, cpos3)
         
         # New marker position values
@@ -53,6 +53,23 @@ class Markers(Node):
         
         # New marker orientation values
         self.marker.pose.orientation = orientation
+
+        self.marker.id = marker_id
+        self.set_marker_colour(marker_id)
+        
+        # Adding new marker
+        self.markerArray.markers.append(self.marker)
+
+        self.marker_pub.publish(self.markerArray)
+
+    def marker_set_oint(self, cpos1, cpos2, cpos3, qua, marker_id):
+        # New marker position values
+        self.marker.pose.position.x = cpos1
+        self.marker.pose.position.y = cpos2
+        self.marker.pose.position.z = cpos3
+        
+        # New marker orientation values
+        self.marker.pose.orientation = qua
 
         self.marker.id = marker_id
         self.set_marker_colour(marker_id)

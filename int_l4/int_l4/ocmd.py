@@ -1,35 +1,45 @@
 import sys
 import rclpy
 from rclpy.node import Node
+import math
 
-from interfaces.srv import Jint
+from interfaces.srv import Oint
 
-
-class Jcmd(Node):
+class Ocmd(Node):
   def __init__(self):
-    super().__init__('Jcmd')
+    super().__init__('Ocmd')
 
-    self.client = self.create_client(Jint, 'jint_control_srv')
+    self.client = self.create_client(Oint, 'oint_control_srv')
     while not self.client.wait_for_service(timeout_sec=2.0):
       self.get_logger().info('Oczekiwanie na serwis')
-    self.request = Jint.Request()
+    self.request = Oint.Request()
     self.def_requests()
 
   def def_requests(self):
     self.requests = [
-      dict(joint1_goal = 0.8, joint2_goal = 0, joint3_goal = 0, time = 2, type = sys.argv[1]),
-      dict(joint1_goal = 0.8, joint2_goal = 1, joint3_goal = 0, time = 2, type = sys.argv[1]),
-      dict(joint1_goal = 0.8, joint2_goal = -1, joint3_goal = 0, time = 2, type = sys.argv[1]),
-      dict(joint1_goal = 0.8, joint2_goal = -1, joint3_goal = 1, time = 2, type = sys.argv[1]),
-      dict(joint1_goal = 0.8, joint2_goal = -1, joint3_goal = -1, time = 2, type = sys.argv[1]),
-      dict(joint1_goal = 0.2, joint2_goal = 0, joint3_goal = 0, time = 2, type = sys.argv[1]),
+      dict(x = 0, y = 0, z = 0, roll = 0, pitch = 0, yaw = math.pi/2, time = 2, int_type = sys.argv[1]),
+      dict(x = 0, y = 0, z = 0, roll = 0, pitch = 0, yaw = 0, time = 2, int_type = sys.argv[1]),
+      dict(x = 0, y = 0, z = 0, roll = 0, pitch = math.pi/2, yaw = 0, time = 2, int_type = sys.argv[1]),
+      dict(x = 0, y = 0, z = 0, roll = 0, pitch = 0, yaw = 0, time = 2, int_type = sys.argv[1]),
+      dict(x = 0, y = 0, z = 0, roll = math.pi/2, pitch = 0, yaw = 0, time = 2, int_type = sys.argv[1]),
+      dict(x = 0, y = 0, z = 0, roll = 0, pitch = 0, yaw = 0, time = 2, int_type = sys.argv[1]),
+      dict(x = 2, y = 0, z = 0, roll = 0, pitch = 0, yaw = 0, time = 2, int_type = sys.argv[1]),
+      dict(x = 0, y = 0, z = 0, roll = 0, pitch = 0, yaw = 0, time = 2, int_type = sys.argv[1]),
+      dict(x = 0, y = 2, z = 0, roll = 0, pitch = 0, yaw = 0, time = 2, int_type = sys.argv[1]),
+      dict(x = 0, y = 0, z = 0, roll = 0, pitch = 0, yaw = 0, time = 2, int_type = sys.argv[1]),
+      dict(x = 0, y = 0, z = 2, roll = 0, pitch = 0, yaw = 0, time = 2, int_type = sys.argv[1]),
+      dict(x = 0, y = 0, z = 0, roll = 0, pitch = 0, yaw = 0, time = 2, int_type = sys.argv[1]),
     ]
 
-  def send_request(self, joint1_goal, joint2_goal, joint3_goal, time, int_type):
+  def send_request(self, x, y, z, roll, pitch, yaw, time, int_type):
     try:
-      self.request.joint1_goal = joint1_goal
-      self.request.joint2_goal = joint2_goal
-      self.request.joint3_goal = joint3_goal
+      self.request.x = x
+      self.request.y = y
+      self.request.z = z
+      self.request.roll = roll
+      self.request.pitch = pitch
+      self.request.yaw = yaw
+
       self.request.time = time
       self.request.type = int_type
 
@@ -44,11 +54,14 @@ class Jcmd(Node):
 
   def run_request(self, request):
     self.send_request(
-      float(request["joint1_goal"]),
-      float(request["joint2_goal"]),
-      float(request["joint3_goal"]),
+      float(request["x"]),
+      float(request["y"]),
+      float(request["z"]),
+      float(request["roll"]),
+      float(request["pitch"]),
+      float(request["yaw"]),
       float(request["time"]),
-      request["type"])
+      request["int_type"])
     while rclpy.ok():
       rclpy.spin_once(self)
       if self.future.done():
@@ -82,7 +95,7 @@ class Jcmd(Node):
 def main(args=None):
   rclpy.init(args=args)
   try:
-    client = Jcmd()
+    client = Ocmd()
     client.run_set_of_requests()
   except ValueError:
     print("Niepoprawny typ interpolacji.")

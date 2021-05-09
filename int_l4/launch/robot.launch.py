@@ -49,6 +49,16 @@ def generate_launch_description():
             name='initpub',
             output='screen'),
         Node(
+            package="int_l4",
+            executable='jint',
+            output="screen"
+        ),
+        Node(package="int_l4",
+            executable="jcmd",
+            arguments=["spline"],
+            output="screen",
+        ),
+        Node(
             package='rviz2',
             executable='rviz2',
             name='manip_rviz2',

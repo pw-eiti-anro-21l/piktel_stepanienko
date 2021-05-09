@@ -23,6 +23,16 @@ def generate_launch_description():
             executable = "static_transform_publisher",
             arguments = ['0', '0', '0', '0', '0', '0', '1', 'map', 'base']),
         Node(
+            package="int_l4",
+            executable='oint',
+            output="screen"
+        ),
+        Node(package="int_l4",
+            executable="ocmd",
+            arguments=["spline"],
+            output="screen",
+        ),
+        Node(
             package='rviz2',
             executable='rviz2',
             name='manip_rviz2',
