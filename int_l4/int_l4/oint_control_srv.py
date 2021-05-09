@@ -19,7 +19,7 @@ from . import markers
 class Oint_srv(Node):
 
     def __init__(self):
-        super().__init__('minimal_client_async')
+        super().__init__('oint')
         self.srv = self.create_service(Oint, 'oint_control_srv', self.service_callback)
         self.start_positions = [0, 0, 0]
         self.start_orientations = [0, 0, 0]
