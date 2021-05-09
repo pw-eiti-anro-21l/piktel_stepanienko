@@ -68,13 +68,14 @@ Visualization Manager:
       Show Axes: true
       Show Names: false
       Tree:
+        base:
+          el1:
+            el2:
+              el3:
+                tool:
+                  {}
         odom:
-          base:
-            el1:
-              el2:
-                el3:
-                  tool:
-                    {}
+          {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -125,6 +126,18 @@ Visualization Manager:
       Update Interval: 0
       Value: true
       Visual Enabled: true
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Name: MarkerArray
+      Namespaces:
+        "": true
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /int_track
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -168,7 +181,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 4.837461948394775
+      Distance: 5.339939117431641
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -183,10 +196,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.1047966480255127
+      Pitch: 0.9547967314720154
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 5.878581523895264
+      Yaw: 5.6185784339904785
     Saved: ~
 Window Geometry:
   Displays:
@@ -202,5 +215,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1340
-  X: 511
-  Y: 63
+  X: 573
+  Y: 110
