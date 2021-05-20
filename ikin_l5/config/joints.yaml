@@ -1,7 +1,7 @@
 fixed_joints: False
 
 el1-el2:
-  d: 0.5
+  d: 0.0
   t: 0.0
 
 el2-el3:

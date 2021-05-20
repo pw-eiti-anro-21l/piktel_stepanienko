@@ -9,6 +9,8 @@ Panels:
         - /TF1
         - /RobotModel1
         - /RobotModel1/Description Topic1
+        - /MarkerArray1
+        - /Pose1
       Splitter Ratio: 0.5
     Tree Height: 617
   - Class: rviz_common/Selection
@@ -47,7 +49,7 @@ Visualization Manager:
       Value: true
     - Class: rviz_default_plugins/TF
       Enabled: true
-      Frame Timeout: 15
+      Frame Timeout: 1000000020040877300000
       Frames:
         All Enabled: true
         base:
@@ -68,14 +70,13 @@ Visualization Manager:
       Show Axes: true
       Show Names: false
       Tree:
-        base:
-          el1:
-            el2:
-              el3:
-                tool:
-                  {}
         odom:
-          {}
+          base:
+            el1:
+              el2:
+                el3:
+                  tool:
+                    {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -138,6 +139,25 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: /int_track
       Value: true
+    - Alpha: 1
+      Axes Length: 1
+      Axes Radius: 0.10000000149011612
+      Class: rviz_default_plugins/Pose
+      Color: 255; 25; 0
+      Enabled: true
+      Head Length: 0.20000000298023224
+      Head Radius: 0.05000000074505806
+      Name: Pose
+      Shaft Length: 0.20000000298023224
+      Shaft Radius: 0.019999999552965164
+      Shape: Arrow
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /oint_pose
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -181,7 +201,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 5.339939117431641
+      Distance: 3.6390187740325928
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -196,10 +216,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.9547967314720154
+      Pitch: 0.9947966933250427
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 5.6185784339904785
+      Yaw: 5.563577175140381
     Saved: ~
 Window Geometry:
   Displays:
@@ -215,5 +235,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1340
-  X: 573
-  Y: 110
+  X: 453
+  Y: 27

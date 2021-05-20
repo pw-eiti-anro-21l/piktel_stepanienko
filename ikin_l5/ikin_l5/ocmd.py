@@ -3,42 +3,29 @@ import rclpy
 from rclpy.node import Node
 import math
 
-from interfaces.srv import Oint
+from interfaces.srv import Ointxyz
 
 class Ocmd(Node):
   def __init__(self):
     super().__init__('Ocmd')
 
-    self.client = self.create_client(Oint, 'oint_control_srv')
+    self.client = self.create_client(Ointxyz, 'oint_control_srv')
     while not self.client.wait_for_service(timeout_sec=2.0):
       self.get_logger().info('Oczekiwanie na serwis')
-    self.request = Oint.Request()
+    self.request = Ointxyz.Request()
     self.def_requests()
 
   def def_requests(self):
     self.requests = [
-      dict(x = 0, y = 0, z = 0, roll = 0, pitch = 0, yaw = math.pi/2, time = 2, int_type = sys.argv[1]),
-      dict(x = 0, y = 0, z = 0, roll = 0, pitch = 0, yaw = 0, time = 2, int_type = sys.argv[1]),
-      dict(x = 0, y = 0, z = 0, roll = 0, pitch = math.pi/2, yaw = 0, time = 2, int_type = sys.argv[1]),
-      dict(x = 0, y = 0, z = 0, roll = 0, pitch = 0, yaw = 0, time = 2, int_type = sys.argv[1]),
-      dict(x = 0, y = 0, z = 0, roll = math.pi/2, pitch = 0, yaw = 0, time = 2, int_type = sys.argv[1]),
-      dict(x = 0, y = 0, z = 0, roll = 0, pitch = 0, yaw = 0, time = 2, int_type = sys.argv[1]),
-      dict(x = 2, y = 0, z = 0, roll = 0, pitch = 0, yaw = 0, time = 2, int_type = sys.argv[1]),
-      dict(x = 0, y = 0, z = 0, roll = 0, pitch = 0, yaw = 0, time = 2, int_type = sys.argv[1]),
-      dict(x = 0, y = 2, z = 0, roll = 0, pitch = 0, yaw = 0, time = 2, int_type = sys.argv[1]),
-      dict(x = 0, y = 0, z = 0, roll = 0, pitch = 0, yaw = 0, time = 2, int_type = sys.argv[1]),
-      dict(x = 0, y = 0, z = 2, roll = 0, pitch = 0, yaw = 0, time = 2, int_type = sys.argv[1]),
-      dict(x = 0, y = 0, z = 0, roll = 0, pitch = 0, yaw = 0, time = 2, int_type = sys.argv[1]),
+      dict(x = 0, y = 0, z = 1.0, time = 2, int_type = sys.argv[1]),
+      dict(x = 0, y = 0, z = 0.5, time = 2, int_type = sys.argv[1])
     ]
 
-  def send_request(self, x, y, z, roll, pitch, yaw, time, int_type):
+  def send_request(self, x, y, z, time, int_type):
     try:
       self.request.x = x
       self.request.y = y
       self.request.z = z
-      self.request.roll = roll
-      self.request.pitch = pitch
-      self.request.yaw = yaw
 
       self.request.time = time
       self.request.type = int_type
@@ -57,9 +44,6 @@ class Ocmd(Node):
       float(request["x"]),
       float(request["y"]),
       float(request["z"]),
-      float(request["roll"]),
-      float(request["pitch"]),
-      float(request["yaw"]),
       float(request["time"]),
       request["int_type"])
     while rclpy.ok():

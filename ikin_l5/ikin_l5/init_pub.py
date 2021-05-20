@@ -1,10 +1,6 @@
-#! /usr/bin/env python
-from math import sin, cos, pi
-import threading
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile
-from geometry_msgs.msg import Quaternion
 from sensor_msgs.msg import JointState
 from tf2_ros import TransformBroadcaster, TransformStamped
 

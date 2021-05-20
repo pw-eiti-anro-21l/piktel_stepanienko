@@ -38,17 +38,6 @@
       <color rgba="1 1 1 1" />
     </material>
   </visual>
-
-  <collision>
-    <origin xyz="0 0 0.1" />
-    <geometry>
-      <box size="
-        ${links['base']['l']}
-        ${links['base']['l']}
-        ${links['base']['w']}" />
-    </geometry>
-    <contact_coefficients mu="0" kp="1000.0" kd="1.0"/>
-  </collision>
 </link>
 
 <joint name="base-el1" type="fixed">
@@ -72,14 +61,6 @@
     </geometry>
     <material name="white"/>
   </visual>
-
-  <collision>
-    <origin xyz="0 0 ${links['el1']['r']/2}" />
-    <geometry>
-      <cylinder radius="${links['el1']['r']}" length="${links['el1']['l']}"/>
-    </geometry>
-    <contact_coefficients mu="0" kp="1000.0" kd="1.0"/>
-  </collision>
 </link>
 
 <joint name="el1-el2" type="${j1}">
@@ -113,14 +94,6 @@
       <color rgba="1 1 1 1" />
     </material>
   </visual>
-
-  <collision>
-    <origin xyz="0 0 ${links['el2']['l']/2}" />
-    <geometry>
-      <cylinder radius="${links['el2']['r']}" length="${links['el2']['l']}"/>
-    </geometry>
-    <contact_coefficients mu="0" kp="1000.0" kd="1.0"/>
-  </collision>
 </link>
 
 <joint name="el2-el3" type="${j2}">
@@ -154,14 +127,6 @@
       <color rgba="1 1 1 1" />
     </material>
   </visual>
-
-  <collision>
-    <origin xyz="${links['el2']['r']+links['el3']['r']} 0 0"/>
-    <geometry>
-      <cylinder radius="${links['el3']['r']}" length="${links['el3']['l']}"/>
-    </geometry>
-    <contact_coefficients mu="0" kp="1000.0" kd="1.0"/>
-  </collision>
 </link>
 
 <joint name="el3-tool" type="${j3}">
@@ -195,14 +160,6 @@
       <color rgba="1 1 1 1" />
     </material>
   </visual>
-
-  <collision>
-    <origin xyz="${links['tool']['l']/2+links['el3']['r']} 0 0" />
-    <geometry>
-      <box size="${links['tool']['l']} ${links['tool']['aa']} ${links['tool']['aa']}"/>
-    </geometry>
-    <contact_coefficients mu="0" kp="1000.0" kd="1.0"/>
-  </collision>
 </link>
 
 </robot>

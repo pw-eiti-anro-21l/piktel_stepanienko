@@ -37,7 +37,8 @@ setup(
             'XYZ_RPY = ikin_l5.XYZ_RPY:main',
             'oint = ikin_l5.oint_control_srv:main',
             'oint_req = ikin_l5.oint_client:main',
-            'ocmd = ikin_l5.ocmd:main'
+            'ocmd = ikin_l5.ocmd:main',
+            'ikin = ikin_l5.ikin:main'
         ],
     },
 )

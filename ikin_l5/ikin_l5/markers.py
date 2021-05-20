@@ -1,4 +1,3 @@
-import rclpy
 from rclpy.node import Node
 from visualization_msgs.msg import Marker
 from visualization_msgs.msg import MarkerArray
@@ -247,12 +246,12 @@ class Markers(Node):
         return joint1_out, joint2_out, joint3_out
 
     def readLinks(self):
-      with open(os.path.join(get_package_share_directory('dkin_l3'), 'links.yaml'), 'r') as file:
+      with open(os.path.join(get_package_share_directory('ikin_l5'), 'links.yaml'), 'r') as file:
         links = yaml.load(file, Loader=yaml.FullLoader)
       return links
 
     def readXYZ_RPY(self):
-      with open(os.path.join(get_package_share_directory('dkin_l3'), 'xyz_rpy.yaml'), 'r') as file:
+      with open(os.path.join(get_package_share_directory('ikin_l5'), 'xyz_rpy.yaml'), 'r') as file:
         xyz_rpy = yaml.load(file, Loader=yaml.FullLoader)
       return xyz_rpy
 

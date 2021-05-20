@@ -20,9 +20,6 @@ def generate_launch_description():
         get_package_share_directory('ikin_l5'),
         urdf_file_name)
 
-    yaml_file_name = 'joints.yaml'
-    yaml = os.path.join(get_package_share_directory('ikin_l5'), yaml_file_name)
-
     os.system('xacro '+urdf+'xacro > '+urdf+'xml')
 
     return LaunchDescription([
@@ -44,10 +41,20 @@ def generate_launch_description():
             parameters=[{'use_sim_time': use_sim_time}],
             arguments=[urdf+'xml']),
         Node(
-            package='int_l4',
+            package='ikin_l5',
             executable='initpub',
             name='initpub',
             output='screen'),
+        Node(
+            package="ikin_l5",
+            executable='oint',
+            output="screen"
+        ),
+        Node(package="ikin_l5",
+            executable="ocmd",
+            arguments=["spline"],
+            output="screen",
+        ),
         Node(
             package='rviz2',
             executable='rviz2',
