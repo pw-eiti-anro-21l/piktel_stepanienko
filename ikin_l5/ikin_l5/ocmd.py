@@ -2,12 +2,23 @@ import sys
 import rclpy
 from rclpy.node import Node
 import math
+import matplotlib.pyplot as plt
 
 from interfaces.srv import Ointxyz
 
 class Ocmd(Node):
   def __init__(self):
     super().__init__('Ocmd')
+    self.a = 0.55
+    self.b = 0.25
+    self.ellipse_points_number = 15
+    self.ellipse_time = 0.8
+    self.ellipse_x = []
+    self.ellipse_y = []
+    self.figures = []
+    self.square = []
+    self.ellipse = []
+
 
     self.client = self.create_client(Ointxyz, 'oint_control_srv')
     while not self.client.wait_for_service(timeout_sec=2.0):
@@ -18,12 +29,88 @@ class Ocmd(Node):
   def def_requests(self):
     # square = 0.5 * math.sqrt(2)
     square = 0.75/math.sqrt(2)
-    self.requests = [
+    self.square = [
       dict(x = square, y = 0, z = 1, time = 2, int_type = sys.argv[1]),
       dict(x = square, y = 0, z = 0.5, time = 2, int_type = sys.argv[1]),
       dict(x = 0, y = square, z = 0.5, time = 2, int_type = sys.argv[1]),
-      dict(x = 0, y = square, z = 1, time = 2, int_type = sys.argv[1])
+      dict(x = 0, y = square, z = 1, time = 2, int_type = sys.argv[1]),
+      dict(x = square, y = 0, z = 1, time = 2, int_type = sys.argv[1]),
+      dict(x = square, y = 0, z = 0.5, time = 2, int_type = sys.argv[1]),
+      dict(x = 0, y = square, z = 0.5, time = 2, int_type = sys.argv[1])
     ]
+
+    self.ellipse = self.create_ellipse_request()
+
+    self.figures.append(self.square)
+    self.figures.append(self.ellipse)
+
+  def create_ellipse_request(self):
+    self.cal_ellipse(self.ellipse_points_number, self.a, self.b)
+    self.add_robot_offset_to_ellipse()
+    self.ellipse = []
+
+    for ellipse_x, ellipse_y in zip(self.ellipse_x, self.ellipse_y):
+      new_x = math.sqrt(abs(0.5*0.5 - ellipse_x*ellipse_x))
+      self.ellipse.append(dict(x = new_x, y = ellipse_x, z = ellipse_y, time = self.ellipse_time, int_type = sys.argv[1]))
+    
+    return self.ellipse
+
+  # ellipse major (a) and minor (b) axis parameters
+  def cal_ellipse(self, n, a, b):
+
+    # num points for transformation lookup function
+    npoints = 1000
+    delta_theta=2.0*math.pi/npoints
+
+    theta=[0.0]
+    delta_s=[0.0]
+    integ_delta_s=[0.0]
+
+    # integrated probability density
+    integ_delta_s_val=0.0
+
+    for iTheta in range(1,npoints+1):
+      # ds/d(theta):
+      delta_s_val=math.sqrt(a**2*math.sin(iTheta*delta_theta)**2+ \
+                            b**2*math.cos(iTheta*delta_theta)**2)
+
+      theta.append(iTheta*delta_theta)
+      delta_s.append(delta_s_val)
+      # do integral
+      integ_delta_s_val = integ_delta_s_val+delta_s_val*delta_theta
+      integ_delta_s.append(integ_delta_s_val)
+      
+    # normalize integrated ds/d(theta) to make into a scaled CDF (scaled to 2*pi)
+    integ_delta_s_norm = []
+    for iEntry in integ_delta_s:
+      integ_delta_s_norm.append(iEntry/integ_delta_s[-1]*2.0*math.pi)    
+
+    # Create corrected ellipse using lookup function
+    ellip_x_prime=[]
+    ellip_y_prime=[]
+
+    npoints_new = n
+    delta_theta_new=2*math.pi/npoints_new
+
+    for theta_index in range(npoints_new):
+      theta_val = theta_index*delta_theta_new
+      
+      # Do lookup:
+      for lookup_index in range(len(integ_delta_s_norm)):
+        if theta_val >= integ_delta_s_norm[lookup_index] and theta_val < integ_delta_s_norm[lookup_index+1]:
+          theta_prime=theta[lookup_index]
+          break
+        
+      # ellipse with transformation applied
+      ellip_x_prime.append(a*math.cos(theta_prime))
+      ellip_y_prime.append(b*math.sin(theta_prime))
+    
+    self.ellipse_x = ellip_x_prime
+    self.ellipse_y = ellip_y_prime
+
+  def add_robot_offset_to_ellipse(self):
+    for y, i in zip(self.ellipse_y, range(len(self.ellipse_y))):
+      self.ellipse_y[i] = y + 0.2 + 0.4 + 0.2
 
   def send_request(self, x, y, z, time, int_type):
     try:
@@ -66,8 +153,9 @@ class Ocmd(Node):
     self.check_int_type()
     while True:
       try:
-        for request in self.requests:
-          self.run_request(request)
+        for figure in self.figures:
+          for request in figure:
+            self.run_request(request)
       except KeyboardInterrupt:
         # Back to starting position
         self.run_request(self.requests[len(self.requests) - 1])
