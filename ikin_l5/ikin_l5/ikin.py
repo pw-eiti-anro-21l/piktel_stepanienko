@@ -47,7 +47,6 @@ class Ikin(Node):
     # chyba tego mozemy użyć do wyznaczenia orientacji
     fi_z = msg.pose.orientation.z
 
-    # obliczenia tutaj
 
     # el1-el2
       # 0.2 - wysokość podstawy
@@ -56,12 +55,25 @@ class Ikin(Node):
     joint1 = z - (self.links['base']['w'] + self.links['el1']['l'] + self.links['el2']['l']/2)
 
     # el2-el3
-      # promień el2 i el3 (0.1) + odległość między nimi (0.5)
-    a2 = self.links['el2']['r'] + self.links['el3']['r'] + self.links['el3']['a']
+      # odległość między el2 i el3 (0.5)
+    a2 = self.links['el3']['a'] + self.links['el3']['r'] + self.links['tool']['l']
+
+    # ograniczenia sin i cos
+    if x/a2 > 1 or x/a2 < -1 or y/a2 > 1 or y/a2 < -1:
+      data_valid = False
+    else:
+      data_valid = True
+
     joint2 = np.arctan2(y/a2, x/a2)
 
-    self.joint_states.position = [joint1, joint2, joint3]
-    self.joint_pub.publish(self.joint_states)
+    if data_valid:
+      self.joint_states.position = [joint1, joint2, joint3]
+      self.joint_pub.publish(self.joint_states)
+    else:
+      self.get_logger().error("Impossible to calculate position"
+        + "x: " + str(x) 
+        + "y: " + str(y)
+        + "z: " + str(z))
 
 def readDH():
   with open(os.path.join(get_package_share_directory('ikin_l5'), 'joints.yaml'), 'r') as file:

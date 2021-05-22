@@ -16,12 +16,13 @@ class Ocmd(Node):
     self.def_requests()
 
   def def_requests(self):
+    # square = 0.5 * math.sqrt(2)
+    square = 0.75/math.sqrt(2)
     self.requests = [
-      dict(x = 0, y = 0, z = 1.0, time = 2, int_type = sys.argv[1]),
-      dict(x = 0, y = 0, z = 0.5, time = 2, int_type = sys.argv[1]),
-      dict(x = 0, y = 1, z = 0.5, time = 2, int_type = sys.argv[1]),
-      dict(x = 1, y = 1, z = 0.5, time = 2, int_type = sys.argv[1]),
-      dict(x = 1, y = 0, z = 0.5, time = 2, int_type = sys.argv[1])
+      dict(x = square, y = 0, z = 1, time = 2, int_type = sys.argv[1]),
+      dict(x = square, y = 0, z = 0.5, time = 2, int_type = sys.argv[1]),
+      dict(x = 0, y = square, z = 0.5, time = 2, int_type = sys.argv[1]),
+      dict(x = 0, y = square, z = 1, time = 2, int_type = sys.argv[1])
     ]
 
   def send_request(self, x, y, z, time, int_type):
