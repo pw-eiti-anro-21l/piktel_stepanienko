@@ -18,7 +18,10 @@ class Ocmd(Node):
   def def_requests(self):
     self.requests = [
       dict(x = 0, y = 0, z = 1.0, time = 2, int_type = sys.argv[1]),
-      dict(x = 0, y = 0, z = 0.5, time = 2, int_type = sys.argv[1])
+      dict(x = 0, y = 0, z = 0.5, time = 2, int_type = sys.argv[1]),
+      dict(x = 0, y = 1, z = 0.5, time = 2, int_type = sys.argv[1]),
+      dict(x = 1, y = 1, z = 0.5, time = 2, int_type = sys.argv[1]),
+      dict(x = 1, y = 0, z = 0.5, time = 2, int_type = sys.argv[1])
     ]
 
   def send_request(self, x, y, z, time, int_type):
