@@ -50,11 +50,11 @@ def generate_launch_description():
             executable='oint',
             output="screen"
         ),
-        # Node(package="ikin_l5",
-        #     executable="ocmd",
-        #     arguments=["spline"],
-        #     output="screen",
-        # ),
+        Node(package="ikin_l5",
+            executable="ocmd",
+            arguments=["spline"],
+            output="screen",
+        ),
         Node(
             package='rviz2',
             executable='rviz2',
