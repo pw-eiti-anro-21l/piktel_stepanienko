@@ -27,16 +27,11 @@ class Ocmd(Node):
     self.def_requests()
 
   def def_requests(self):
-    # square = 0.5 * math.sqrt(2)
-    square = 0.75/math.sqrt(2)
     self.square = [
-      dict(x = square, y = 0, z = 1, time = 2, int_type = sys.argv[1]),
-      dict(x = square, y = 0, z = 0.5, time = 2, int_type = sys.argv[1]),
-      dict(x = 0, y = square, z = 0.5, time = 2, int_type = sys.argv[1]),
-      dict(x = 0, y = square, z = 1, time = 2, int_type = sys.argv[1]),
-      dict(x = square, y = 0, z = 1, time = 2, int_type = sys.argv[1]),
-      dict(x = square, y = 0, z = 0.5, time = 2, int_type = sys.argv[1]),
-      dict(x = 0, y = square, z = 0.5, time = 2, int_type = sys.argv[1])
+      dict(x = 0.4, y = 0.4, z = 0.8, time = 3, int_type = sys.argv[1]),
+      dict(x = 0.4, y = -0.4, z = 0.8, time = 3, int_type = sys.argv[1]),
+      dict(x = -0.4, y = -0.4, z = 0.8, time = 3, int_type = sys.argv[1]),
+      dict(x = -0.4, y = 0.4, z = 0.8, time = 3, int_type = sys.argv[1])
     ]
 
     self.ellipse = self.create_ellipse_request()

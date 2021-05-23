@@ -16,7 +16,7 @@ class Oint_srv(Node):
   def __init__(self):
     super().__init__('oint')
     self.srv = self.create_service(Ointxyz, 'oint_control_srv', self.service_callback)
-    self.start_positions = [0, 0, 0.5]
+    self.start_positions = [0.6, 0, 0.8]
     self.step_time = 0.1
 
     self.markers = markers.Markers()
