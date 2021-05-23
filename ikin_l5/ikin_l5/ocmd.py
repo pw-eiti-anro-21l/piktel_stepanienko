@@ -9,10 +9,10 @@ from interfaces.srv import Ointxyz
 class Ocmd(Node):
   def __init__(self):
     super().__init__('Ocmd')
-    self.a = 0.55
-    self.b = 0.25
+    self.a = 0.65
+    self.b = 0.4
     self.ellipse_points_number = 15
-    self.ellipse_time = 0.8
+    self.ellipse_time = 1.2
     self.ellipse_x = []
     self.ellipse_y = []
     self.figures = []
@@ -27,28 +27,50 @@ class Ocmd(Node):
     self.def_requests()
 
   def def_requests(self):
-    self.square = [
+
+    self.square = self.create_square_horizontal_request()
+    self.ellipse_horizontal = self.create_ellipse_horizontal_request()
+    self.ellipse_vertical = self.create_ellipse_vertical_request()
+
+    self.figures.append(self.square)
+    self.figures.append(self.ellipse_horizontal)
+    self.figures.append(self.ellipse_vertical)
+
+  def create_square_horizontal_request(self):
+    square = [
       dict(x = 0.4, y = 0.4, z = 0.8, time = 3, int_type = sys.argv[1]),
       dict(x = 0.4, y = -0.4, z = 0.8, time = 3, int_type = sys.argv[1]),
       dict(x = -0.4, y = -0.4, z = 0.8, time = 3, int_type = sys.argv[1]),
-      dict(x = -0.4, y = 0.4, z = 0.8, time = 3, int_type = sys.argv[1])
+      dict(x = -0.4, y = 0.4, z = 0.8, time = 3, int_type = sys.argv[1]),
+      dict(x = 0.4, y = 0.4, z = 0.8, time = 3, int_type = sys.argv[1])
     ]
 
-    self.ellipse = self.create_ellipse_request()
+    return square
 
-    self.figures.append(self.square)
-    self.figures.append(self.ellipse)
-
-  def create_ellipse_request(self):
+  def create_ellipse_horizontal_request(self):
     self.cal_ellipse(self.ellipse_points_number, self.a, self.b)
+    self.ellipse_horizontal = []
+
+    self.ellipse_horizontal.append(dict(x = self.a, y = 0, z = 0.8, time = 5, int_type = sys.argv[1]))
+
+    for ellipse_x, ellipse_y in zip(self.ellipse_x, self.ellipse_y):
+      self.ellipse_horizontal.append(dict(x = ellipse_x, y = ellipse_y, z = 0.8, time = self.ellipse_time, int_type = sys.argv[1]))
+    
+    return self.ellipse_horizontal
+
+  def create_ellipse_vertical_request(self):
+    self.cal_ellipse(self.ellipse_points_number, 0.5, 0.2)
+
     self.add_robot_offset_to_ellipse()
-    self.ellipse = []
+    self.ellipse_vertical = []
+
+    self.ellipse_vertical.append(dict(x = 0, y = self.a, z = 0.8, time = 5, int_type = sys.argv[1]))
 
     for ellipse_x, ellipse_y in zip(self.ellipse_x, self.ellipse_y):
       new_x = math.sqrt(abs(0.5*0.5 - ellipse_x*ellipse_x))
-      self.ellipse.append(dict(x = new_x, y = ellipse_x, z = ellipse_y, time = self.ellipse_time, int_type = sys.argv[1]))
+      self.ellipse_vertical.append(dict(x = new_x, y = ellipse_x, z = ellipse_y, time = self.ellipse_time, int_type = sys.argv[1]))
     
-    return self.ellipse
+    return self.ellipse_vertical
 
   # ellipse major (a) and minor (b) axis parameters
   def cal_ellipse(self, n, a, b):
@@ -148,14 +170,32 @@ class Ocmd(Node):
     self.check_int_type()
     while True:
       try:
-        for figure in self.figures:
-          for request in figure:
-            self.run_request(request)
+        self.choose_figure()
+        # for figure in self.figures:
+        #   for request in figure:
+        #     self.run_request(request)
       except KeyboardInterrupt:
         # Back to starting position
-        self.run_request(self.requests[len(self.requests) - 1])
+        self.run_request(self.figures[0][0])
         self.get_logger().info("Koniec pracy automatycznego klienta.")
         return
+
+  def choose_figure(self):
+    if sys.argv[2] == 'all':
+      for figure in self.figures:
+        for request in figure:
+          self.run_request(request)
+    elif sys.argv[2] == 'square':
+      for request in self.figures[0]:
+        self.run_request(request)
+    elif sys.argv[2] == 'h_ellipse':
+      for request in self.figures[1]:
+        self.run_request(request)
+    elif sys.argv[2] == 'v_ellipse':
+      for request in self.figures[2]:
+        self.run_request(request)
+    else:
+      raise ValueError
 
   def check_int_type(self):
     if sys.argv[1] != 'linear' and sys.argv[1] != 'spline':
@@ -169,7 +209,7 @@ def main(args=None):
     client = Ocmd()
     client.run_set_of_requests()
   except ValueError:
-    print("Niepoprawny typ interpolacji.")
+    print("Niepoprawny typ interpolacji lub figura.")
   except Exception as e:
     print(e)
     print("Nie udalo sie uruchomic klienta")
