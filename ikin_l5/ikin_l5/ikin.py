@@ -32,6 +32,7 @@ class Ikin(Node):
       qos_profile)
 
     self.joint_states = JointState()
+    self.joint_prev_pos = [0.5, 0.0, 0.0]
 
   def listener_callback(self, msg):
     now = self.get_clock().now()
@@ -47,14 +48,10 @@ class Ikin(Node):
     z = msg.pose.position.z
 
 
-    # el1-el2
-      # 0.2 - wysokość podstawy
-      # 0.4 - Wyskokość pierwszego elementu
-      # 0.1 - pół wysokości drugiego elementu
+    # z axis
     joint1 = z - (self.links['base']['w'] + self.links['el1']['l'] + self.links['el2']['l']/2)
 
-    # el2-el3
-      # odległość między el2 i el3 (0.5)
+    # xy plane
     a2 = self.links['el3']['a']
     a3 = self.links['tool']['l'] + self.links['el3']['r']
 
@@ -62,24 +59,44 @@ class Ikin(Node):
 
     try:
       joint31 = acos((x**2+y**2-a2**2-a3**2)/(2*a2*a3))
-      joint21 = -asin(a3*sin(joint31)/(sqrt(x**2+y**2))) + atan(y/x)
+      joint21 = -asin(a3*sin(joint31)/(sqrt(x**2+y**2))) + atan2(y, x)
+      delta1 = joint31 - self.joint_prev_pos[2] + joint21 - self.joint_prev_pos[1]
 
-      joint32 = acos((x**2+y**2-a2**2-a3**2)/(2*a2*a3))
-      joint22 = -asin(a3*sin(joint32)/(sqrt(x**2+y**2))) + atan(y/x)
+      joint32 = -acos((x**2+y**2-a2**2-a3**2)/(2*a2*a3))
+      joint22 = -asin(a3*sin(joint32)/(sqrt(x**2+y**2))) + atan2(y, x)
+      delta2 = joint32 - self.joint_prev_pos[2] + joint22 - self.joint_prev_pos[1]
 
-      if (a2*cos(joint21)+a3*cos(joint21+joint31)-x+a2*sin(joint21)+a3*sin(joint21+joint31)-y) < \
-        (a2*cos(joint22)+a3*cos(joint22+joint32)-x+a2*sin(joint22)+a3*sin(joint22+joint32)-y):
+      joint33 = acos((x**2+y**2-a2**2-a3**2)/(2*a2*a3))
+      joint23 = pi - asin(a3*sin(joint33)/(sqrt(x**2+y**2))) + atan2(y, x)
+      delta3 = joint33 - self.joint_prev_pos[2] + joint23 - self.joint_prev_pos[1]
+
+      joint34 = -acos((x**2+y**2-a2**2-a3**2)/(2*a2*a3))
+      joint24 = pi - asin(a3*sin(joint34)/(sqrt(x**2+y**2))) + atan2(y, x)
+      delta4 = joint34 - self.joint_prev_pos[2] + joint24 - self.joint_prev_pos[1]
+
+      jmin = min(delta1, delta2, delta3, delta4)
+
+      if jmin == delta1:
         joint2 = joint21
         joint3 = joint31
-      else:
+      elif jmin == delta2:
         joint2 = joint22
         joint3 = joint32
+      elif jmin == delta3:
+        joint2 = joint23
+        joint3 = joint33
+      elif jmin == delta4:
+        joint2 = joint24
+        joint3 = joint34
+
+
     except Exception as e:
       data_valid = False
 
     if data_valid:
       self.joint_states.position = [joint1, joint2, joint3]
       self.joint_pub.publish(self.joint_states)
+      self.joint_prev_pos = [joint1, joint2, joint3]
     else:
       self.get_logger().error("Impossible to calculate position "
         + " x: " + str(x) 

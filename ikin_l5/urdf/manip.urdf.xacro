@@ -111,6 +111,24 @@
   <limit upper="0" lower="0.0" effort="10" velocity="10" />
 </joint>
 
+<joint name="el2-el3-fill" type="fixed">
+  <parent link="el3"/>
+  <child link="2-3-fill"/>
+  <origin xyz="${links['el3']['a']/2} 0 0" rpy="0 1.57 0"/>
+</joint>
+
+<link name="2-3-fill">
+  <visual>
+    <origin xyz="0 0 0"/>
+    <geometry>
+      <cylinder radius="${links['tool']['aa']/2}" length="${links['el3']['a']}"/>
+    </geometry>
+    <material name="white">
+      <color rgba="1 1 1 1" />
+    </material>
+  </visual>
+</link>
+
 <link name="el3">
   <inertial>
     <mass value="1"/>
@@ -155,6 +173,24 @@
     <origin xyz="${links['tool']['l']/2+links['el3']['r']} 0 0" />
     <geometry>
       <box size="${links['tool']['l']} ${links['tool']['aa']} ${links['tool']['aa']}"/>
+    </geometry>
+    <material name="white">
+      <color rgba="1 1 1 1" />
+    </material>
+  </visual>
+</link>
+
+<joint name="tool-toolend" type="fixed">
+  <parent link="tool"/>
+  <child link="toolend"/>
+  <origin xyz="${links['tool']['l']+links['el3']['r']} 0 0" rpy="0 0 0"/>
+</joint>
+
+<link name="toolend">
+  <visual>
+    <origin xyz="0 0 0"/>
+    <geometry>
+      <sphere radius="${links['tool']['aa']/2}"/>
     </geometry>
     <material name="white">
       <color rgba="1 1 1 1" />

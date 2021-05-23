@@ -9,6 +9,8 @@ Panels:
         - /TF1
         - /RobotModel1
         - /RobotModel1/Description Topic1
+        - /RobotModel1/Links1
+        - /RobotModel1/Links1/toolend1
         - /MarkerArray1
         - /Pose1
       Splitter Ratio: 0.5
@@ -51,6 +53,8 @@ Visualization Manager:
       Enabled: true
       Frame Timeout: 1000000020040877300000
       Frames:
+        2-3-fill:
+          Value: true
         All Enabled: true
         base:
           Value: true
@@ -64,10 +68,12 @@ Visualization Manager:
           Value: true
         tool:
           Value: true
+        toolend:
+          Value: true
       Marker Scale: 1
       Name: TF
       Show Arrows: true
-      Show Axes: true
+      Show Axes: false
       Show Names: false
       Tree:
         odom:
@@ -75,8 +81,11 @@ Visualization Manager:
             el1:
               el2:
                 el3:
-                  tool:
+                  2-3-fill:
                     {}
+                  tool:
+                    toolend:
+                      {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -92,6 +101,11 @@ Visualization Manager:
         Value: /robot_description
       Enabled: true
       Links:
+        2-3-fill:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         All Links Enabled: true
         Expand Joint Details: false
         Expand Link Details: false
@@ -122,33 +136,38 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        toolend:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: true
+          Value: true
       Name: RobotModel
       TF Prefix: ""
       Update Interval: 0
       Value: true
       Visual Enabled: true
     - Class: rviz_default_plugins/MarkerArray
-      Enabled: true
+      Enabled: false
       Name: MarkerArray
       Namespaces:
-        "": true
+        {}
       Topic:
         Depth: 5
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: /int_track
-      Value: true
+      Value: false
     - Alpha: 1
       Axes Length: 1
       Axes Radius: 0.10000000149011612
       Class: rviz_default_plugins/Pose
-      Color: 255; 25; 0
+      Color: 245; 121; 0
       Enabled: true
-      Head Length: 0.20000000298023224
+      Head Length: 0.10000000149011612
       Head Radius: 0.05000000074505806
       Name: Pose
-      Shaft Length: 0.20000000298023224
+      Shaft Length: 0.10000000149011612
       Shaft Radius: 0.019999999552965164
       Shape: Arrow
       Topic:
@@ -201,25 +220,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 3.6390187740325928
+      Distance: 2.893156051635742
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0
-        Y: 0
-        Z: 0
+        X: 0.0461772158741951
+        Y: 0.058712538331747055
+        Z: -1.1641532182693481e-10
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.9947966933250427
+      Pitch: 1.2597962617874146
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 5.563577175140381
+      Yaw: 5.271731853485107
     Saved: ~
 Window Geometry:
   Displays:
@@ -235,5 +254,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1340
-  X: 453
-  Y: 27
+  X: 218
+  Y: 71
