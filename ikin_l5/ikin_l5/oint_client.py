@@ -20,8 +20,8 @@ class OintClient(Node):
             self.request.y= float(sys.argv[2])
             self.request.z = float(sys.argv[3])
 
-            self.request.time = float(sys.argv[7])
-            self.request.type = (sys.argv[8])
+            self.request.time = float(sys.argv[4])
+            self.request.type = (sys.argv[5])
 
         except IndexError:
             print("Niepoprawna liczba parametrow")

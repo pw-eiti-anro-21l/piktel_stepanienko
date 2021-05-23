@@ -1,4 +1,4 @@
-from math import sin, cos, pi
+from math import atan, sin, cos, pi, sqrt, acos, asin, atan2
 import numpy as np
 import rclpy
 from rclpy.node import Node
@@ -45,8 +45,6 @@ class Ikin(Node):
     x = msg.pose.position.x
     y = msg.pose.position.y
     z = msg.pose.position.z
-    # chyba tego mozemy użyć do wyznaczenia orientacji
-    fi_z = msg.pose.orientation.z
 
 
     # el1-el2
@@ -57,24 +55,36 @@ class Ikin(Node):
 
     # el2-el3
       # odległość między el2 i el3 (0.5)
-    a2 = self.links['el3']['a'] + self.links['el3']['r'] + self.links['tool']['l']
+    a2 = self.links['el3']['a']
+    a3 = self.links['tool']['l'] + self.links['el3']['r']
 
-    # ograniczenia sin i cos
-    if x/a2 > 1 or x/a2 < -1 or y/a2 > 1 or y/a2 < -1:
+    data_valid = True
+
+    try:
+      joint31 = acos((x**2+y**2-a2**2-a3**2)/(2*a2*a3))
+      joint21 = -asin(a3*sin(joint31)/(sqrt(x**2+y**2))) + atan(y/x)
+
+      joint32 = acos((x**2+y**2-a2**2-a3**2)/(2*a2*a3))
+      joint22 = -asin(a3*sin(joint32)/(sqrt(x**2+y**2))) + atan(y/x)
+
+      if (a2*cos(joint21)+a3*cos(joint21+joint31)-x+a2*sin(joint21)+a3*sin(joint21+joint31)-y) < \
+        (a2*cos(joint22)+a3*cos(joint22+joint32)-x+a2*sin(joint22)+a3*sin(joint22+joint32)-y):
+        joint2 = joint21
+        joint3 = joint31
+      else:
+        joint2 = joint22
+        joint3 = joint32
+    except Exception as e:
       data_valid = False
-    else:
-      data_valid = True
-
-    joint2 = np.arctan2(y/a2, x/a2)
 
     if data_valid:
       self.joint_states.position = [joint1, joint2, joint3]
       self.joint_pub.publish(self.joint_states)
     else:
-      self.get_logger().error("Impossible to calculate position"
-        + "x: " + str(x) 
-        + "y: " + str(y)
-        + "z: " + str(z))
+      self.get_logger().error("Impossible to calculate position "
+        + " x: " + str(x) 
+        + " y: " + str(y)
+        + " z: " + str(z))
 
 def readDH():
   with open(os.path.join(get_package_share_directory('ikin_l5'), 'joints.yaml'), 'r') as file:
