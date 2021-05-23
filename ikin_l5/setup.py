@@ -38,7 +38,9 @@ setup(
             'oint = ikin_l5.oint_control_srv:main',
             'oint_req = ikin_l5.oint_client:main',
             'ocmd = ikin_l5.ocmd:main',
-            'ikin = ikin_l5.ikin:main'
+            'ikin = ikin_l5.ikin:main',
+            'jint = int_l4.jint_control_srv:main',
+            'jint_req = int_l4.jint_client:main'
         ],
     },
 )
