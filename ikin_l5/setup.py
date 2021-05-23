@@ -40,7 +40,8 @@ setup(
             'ocmd = ikin_l5.ocmd:main',
             'ikin = ikin_l5.ikin:main',
             'jint = int_l4.jint_control_srv:main',
-            'jint_req = int_l4.jint_client:main'
+            'jint_req = int_l4.jint_client:main',
+            'NONKDL_DKIN = dkin_l3.NONKDL_DKIN:main'
         ],
     },
 )
