@@ -59,12 +59,12 @@ class Ocmd(Node):
     return self.ellipse_horizontal
 
   def create_ellipse_vertical_request(self):
-    self.cal_ellipse(self.ellipse_points_number, 0.5, 0.2)
+    self.cal_ellipse(self.ellipse_points_number, 0.5, 0.15)
 
     self.add_robot_offset_to_ellipse()
     self.ellipse_vertical = []
 
-    self.ellipse_vertical.append(dict(x = 0, y = self.a, z = 0.8, time = 2, int_type = sys.argv[1]))
+    self.ellipse_vertical.append(dict(x = 0, y = self.a - 0.1, z = 0.8, time = 2, int_type = sys.argv[1]))
 
     for ellipse_x, ellipse_y in zip(self.ellipse_x, self.ellipse_y):
       new_x = math.sqrt(abs(0.5*0.5 - ellipse_x*ellipse_x))
