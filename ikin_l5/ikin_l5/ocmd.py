@@ -9,10 +9,10 @@ from interfaces.srv import Ointxyz
 class Ocmd(Node):
   def __init__(self):
     super().__init__('Ocmd')
-    self.a = 0.65
+    self.a = 0.6
     self.b = 0.4
-    self.ellipse_points_number = 15
-    self.ellipse_time = 1.2
+    self.ellipse_points_number = 30
+    self.ellipse_time = 0.4
     self.ellipse_x = []
     self.ellipse_y = []
     self.figures = []
@@ -51,7 +51,7 @@ class Ocmd(Node):
     self.cal_ellipse(self.ellipse_points_number, self.a, self.b)
     self.ellipse_horizontal = []
 
-    self.ellipse_horizontal.append(dict(x = self.a, y = 0, z = 0.8, time = 5, int_type = sys.argv[1]))
+    # self.ellipse_horizontal.append(dict(x = self.a, y = 0, z = 0.8, time = 2, int_type = sys.argv[1]))
 
     for ellipse_x, ellipse_y in zip(self.ellipse_x, self.ellipse_y):
       self.ellipse_horizontal.append(dict(x = ellipse_x, y = ellipse_y, z = 0.8, time = self.ellipse_time, int_type = sys.argv[1]))
@@ -64,7 +64,7 @@ class Ocmd(Node):
     self.add_robot_offset_to_ellipse()
     self.ellipse_vertical = []
 
-    self.ellipse_vertical.append(dict(x = 0, y = self.a, z = 0.8, time = 5, int_type = sys.argv[1]))
+    self.ellipse_vertical.append(dict(x = 0, y = self.a, z = 0.8, time = 2, int_type = sys.argv[1]))
 
     for ellipse_x, ellipse_y in zip(self.ellipse_x, self.ellipse_y):
       new_x = math.sqrt(abs(0.5*0.5 - ellipse_x*ellipse_x))

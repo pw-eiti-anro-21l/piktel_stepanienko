@@ -32,7 +32,7 @@ class NONKDL_DKIN(Node):
         links = readLinks()
 
         T = np.eye(4)
-        T[2][3] = 0.1
+        T[2][3] = 0.15
 
         for i, joint in enumerate(dhv.keys()):
 
@@ -121,28 +121,28 @@ class NONKDL_DKIN(Node):
         joint_max = [0.8, 1.0, 1.0]
         joint_str = ["el1-el1", "el2-el3", "el3-tool"]
 
-        if joint >= joint_max[i] or joint <= joint_min[i]:
-            self.get_logger().info("ERROR: Joint " + joint_str[i] + " is overstepping!")
-            if joint >= joint_max[i]:
-                joint_out = joint_max[i]
-            elif joint <= joint_min[i]:
-                joint_out = joint_min[i]
-        else:
-            joint_out = joint
+        # if joint >= joint_max[i] or joint <= joint_min[i]:
+        #     self.get_logger().info("ERROR: Joint " + joint_str[i] + " is overstepping!")
+        #     if joint >= joint_max[i]:
+        #         joint_out = joint_max[i]
+        #     elif joint <= joint_min[i]:
+        #         joint_out = joint_min[i]
+        # else:
+        joint_out = joint
         
         return joint_out
 
 
 def readDH():
 
-    with open(os.path.join(get_package_share_directory('dkin_l3'), 'joints.yaml'), 'r') as file:
+    with open(os.path.join(get_package_share_directory('ikin_l5'), 'joints.yaml'), 'r') as file:
         dhv = yaml.load(file, Loader=yaml.FullLoader)
 
     return dhv
 
 def readLinks():
 
-    with open(os.path.join(get_package_share_directory('dkin_l3'), 'links.yaml'), 'r') as file:
+    with open(os.path.join(get_package_share_directory('ikin_l5'), 'links.yaml'), 'r') as file:
         links = yaml.load(file, Loader=yaml.FullLoader)
 
     return links
